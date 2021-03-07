@@ -1,0 +1,69 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &7224665321241216062
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7970611352867008013}
+  - component: {fileID: 7439350758066028980}
+  m_Layer: 0
+  m_Name: TerrainManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7970611352867008013
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7224665321241216062}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -10.494778, y: -14.489668, z: 7.791363}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7439350758066028980
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7224665321241216062}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fbed62bc6ad1f4a408930b49c5ec6bbc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  startSpawn: {fileID: 8791047097820635146, guid: f7e0565b2292dfb45ab6b63edd8f92b1,
+    type: 3}
+  firstStop: {fileID: 3386159441547909925, guid: 073a815dfe9c5024784d9ccd4977aa16,
+    type: 3}
+  midwayMiddleStop: {fileID: 6923278991783616021, guid: a3ab4ac80e5bec14d800dc2433f90a37,
+    type: 3}
+  bigStop: {fileID: 5796614135342053906, guid: 2d471c7768d72b04fa73b8b999588922, type: 3}
+  midwayStopOnSide: {fileID: 290442346729001084, guid: f20e70f29fd46b049b7ad1420474c67e,
+    type: 3}
+  battleAlley: {fileID: 7012945621201654904, guid: 27e88a0cb3eb5c64d9d8b854d905de78,
+    type: 3}
+  endStopSmall: {fileID: 3386159441547909925, guid: 3a5bb29ed03fe2d4dbbec30234fc06a3,
+    type: 3}
+  endStopMiddle: {fileID: 6923278991783616021, guid: 02c622c611ac57d4bb7bba5893b8e20d,
+    type: 3}
+  battleArena: {fileID: 8791047097820635146, guid: 7bc48b97e31f5bd48a201bb51d384db7,
+    type: 3}
+  lengthOfRun: 6
+  currentLenght: 2
+  currentPlaceInGuantlet: 0
+  whatToSpawn: 0
+  path: 1
+  nextChunkPos: {x: 0, y: 0, z: 0}
+  arenaPos: {x: -50, y: 0, z: -50}
