@@ -1,10 +1,8 @@
 save system (deleting files, loading/ saving)
 use attacking move with last breath (particles)
 status effects on switch in (spreading plague)
-cam fix (no walls)
 end celebration (end screen with particle effects)
 check all info descriptions of info screen
-make cam movement slower
 particles for winning/ losing battle
 
 music making day with bruno?

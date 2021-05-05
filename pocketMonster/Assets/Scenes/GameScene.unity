@@ -530,7 +530,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   distanceXZ: 7
   distanceY: 4
-  smoothPos: 20
+  smoothPos: 10
   smoothRot: 20
   lookDownFactor: 10
 --- !u!114 &963194230
