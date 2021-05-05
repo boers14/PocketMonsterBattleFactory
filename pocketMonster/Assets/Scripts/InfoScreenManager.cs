@@ -34,7 +34,6 @@ public class InfoScreenManager : MonoBehaviour
     private Text pageCount = null;
     private int maxFontSize = 0;
 
-    // Start is called before the first frame update
     void Start()
     {
         bg.rectTransform.sizeDelta = canvas.GetComponent<RectTransform>().sizeDelta;
@@ -92,11 +91,10 @@ public class InfoScreenManager : MonoBehaviour
 
         Text controlsExplanation = Instantiate(textPrefab);
         SetUIPosition(controlsExplanation.gameObject, 1.85f, 1.45f, 2, 2.5f, 1, -1);
-        controlsExplanation.text = "Use WSAD to move around. Press Z to start running.\n\nPress X to open the type chart. Left click on the type chart to " +
+        controlsExplanation.text = "Use WAD to move around. Press Z to start running.\n\nPress X to open the type chart. Left click on the type chart to " +
             "switch to the statusses chart.\n\nPress C to open up the pocketmonster menu. Hover over moves/ items/ abilitys to see what it does. Click on a" +
             " pocketmonster to drag it around and switch positions in the party.\n\nPress V to open up the guantlet map. Click and move the mouse around " +
             "to move the map. Hover over the texts to see what certain objectives do.\n\nPress S outside of battle to save the game.";
-        StartCoroutine(SetMaxFontSize(controlsExplanation));
         allTexts.Add(controlsExplanation);
 
         Image typeChartImage = Instantiate(imagePrefab);
@@ -140,7 +138,6 @@ public class InfoScreenManager : MonoBehaviour
             "buttons can be used to switch around pocketmonsters. Hover over them to see what state the pocketmonster is in.\n\nOn the top sides of the " +
             "screen are both pocketmonster stats and abilitys. Unfold with Z to see all the stats and hover over abilitys to see what they do.\n\nWhile " +
             "battle actions are performed the textboxes will pop-up. Click to make them go away faster.";
-        StartCoroutine(SetMaxFontSize(controlsExplanation));
         allTexts.Add(controlsExplanation);
 
         Image moveButtonImage = Instantiate(imagePrefab);
@@ -180,7 +177,6 @@ public class InfoScreenManager : MonoBehaviour
             "attacking stats and higher defenses.\n\nSuper effective moves deal 2 times damage and not very effetcive moves deal 0.5 times damage.\n\n" +
             "If an stat is raised by one stage it's getting 50% added from the base stat (so with 50 attack, 25 attack would be added). If an stat is lowered" +
             " the stat is divided by 1.5 if it's lowered by one stage and divided by 4 if it's lowered by 6 stages.";
-        StartCoroutine(SetMaxFontSize(controlsExplanation));
         allTexts.Add(controlsExplanation);
     }
 
@@ -208,15 +204,17 @@ public class InfoScreenManager : MonoBehaviour
         SetUIPosition(titel.gameObject, 4, 10, 0, 2, 1, -1);
         titel.resizeTextMaxSize = 150;
         titel.alignment = TextAnchor.MiddleCenter;
-        titel.text = "Last words";
+        titel.text = "Pickups & goal";
         allTexts.Add(titel);
 
         Text controlsExplanation = Instantiate(textPrefab);
         SetUIPosition(controlsExplanation.gameObject, 1.5f, 1.45f, 0, 2.5f, 1, -1);
-        controlsExplanation.text = "The goal of the game is to get to the final battle without losing a single battle in between. You're team will be " +
+        controlsExplanation.text = "The maximum amount of pocketmonsters is 4. The maximum amount of moves per pocketmonster is 4. The maximum amount of items " +
+            "per pocketmonster is 3. The maximum amount of teambuffs is 3. If something exceeds the maximum the game will ask te remove something to add something." +
+            " Removing a pocketmonster and adding a new one will give the same amount of moves as the old pocketmonster, with the same items. When picking a " +
+            "pocketmonster hover over the ability to see what it does. When adding moves/ items hover over the question to see what they do." +
+            " \n\nThe goal of the game is to get to the final battle without losing a single battle in between. You're team will be " +
             "healed after every battle and after every battle something can be collected to add and upgrade the team.";
-        controlsExplanation.resizeTextForBestFit = false;
-        controlsExplanation.fontSize = maxFontSize;
         allTexts.Add(controlsExplanation);
     }
 
@@ -297,12 +295,6 @@ public class InfoScreenManager : MonoBehaviour
         }
 
         uiObject.GetComponent<RectTransform>().localPosition = pos;
-    }
-
-    private IEnumerator SetMaxFontSize(Text text)
-    {
-        yield return new WaitForEndOfFrame();
-        maxFontSize = text.cachedTextGenerator.fontSizeUsedForBestFit;
     }
 
     private void DeleteAllPageContents()
