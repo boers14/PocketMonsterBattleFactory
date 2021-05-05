@@ -1784,12 +1784,12 @@ MonoBehaviour:
     baseSpecialAttack: 50
     baseSpecialDefense: 30
     baseSpeed: 130
+    originalCritChance: 0
     baseStats: []
-    name: Grass/Light
+    name: Zitkala
     typing: 0100000005000000
   health: 0
   amountOfDamageTaken: 0
-  healthAtStartOfTurn: 0
   fainted: 0
   abilityOnTheirTurn: 0
   aftermathOfAbility: 0

@@ -490,7 +490,7 @@ MonoBehaviour:
     baseSpeed: 90
     originalCritChance: 0
     baseStats: []
-    name: Wind
+    name: Veceslav
     typing: 03000000
   health: 0
   amountOfDamageTaken: 0

@@ -801,12 +801,12 @@ MonoBehaviour:
     baseSpecialAttack: 115
     baseSpecialDefense: 53
     baseSpeed: 77
+    originalCritChance: 0
     baseStats: []
-    name: Spooky/Water
+    name: Hella
     typing: 0200000006000000
   health: 0
   amountOfDamageTaken: 0
-  healthAtStartOfTurn: 0
   fainted: 0
   abilityOnTheirTurn: 0
   aftermathOfAbility: 0

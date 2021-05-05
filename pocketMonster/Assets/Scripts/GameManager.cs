@@ -43,9 +43,21 @@ public class GameManager : MonoBehaviour
     private List<Text> extraTexts = new List<Text>();
     private List<Image> bgsForTexts = new List<Image>();
 
-    private List<GameObject> mergants = new List<GameObject>();
+    public List<GameObject> mergants = new List<GameObject>();
+    public List<GameObject> trainers = new List<GameObject>();
+    public List<PocketMonsterMoves> currentMovesHandedOut = new List<PocketMonsterMoves>();
+    public List<PocketMonsterItem> currentItemsHandedOut = new List<PocketMonsterItem>();
+    public CurrentMergant currentMergant = CurrentMergant.PocketMonster;
 
-    private int lives = 3;
+    public int lives = 3;
+
+    public enum CurrentMergant
+    {
+        Item,
+        Move,
+        PocketMonster,
+        TeamBuff
+    }
 
     public enum PickupsInGauntlet
     {
@@ -63,7 +75,7 @@ public class GameManager : MonoBehaviour
 
     public BigPickups nextBigPickUp = BigPickups.PocketMonster;
 
-    private int currentPickUp = 0, itemHandOutIndex = 0;
+    public int currentPickUp = 0, itemHandOutIndex = 0;
 
     public List<PocketMonsterMoves> allMovesHandedOut = new List<PocketMonsterMoves>();
 
@@ -79,12 +91,18 @@ public class GameManager : MonoBehaviour
 
     private EnemyManager managerOfEnemys;
 
+    private TerrainManager managerOfTheTerrains;
+
     private PlayerBattle playerBattle;
 
     [SerializeField]
     private Material teamBuffMaterial = null, finalBattleMaterial = null, pocketMonsterMaterial = null, itemMaterial = null, moveMaterial = null;
 
-    // Start is called before the first frame update
+    public List<int> playerPocketMonsterInInt = new List<int>(), playerPocketMonstersAbilityInInt = new List<int>(), teamBuffsOfPlayerInInt = new List<int>(),
+        allMovesHandedOutInInt = new List<int>(), itemsToHandOutInInt = new List<int>(), movesToHandOutInInt = new List<int>(),
+        currentMovesHandedOutInInt = new List<int>(), currentItemsHandedOutInInt = new List<int>();
+    public List<List<int>> playerPocketMonsterMovesInInt = new List<List<int>>(), playerPocketMonsterItemsInInt = new List<List<int>>();
+
     void Start()
     {
         if (GameObject.FindGameObjectsWithTag("GameManager").Length > 1)
@@ -98,6 +116,7 @@ public class GameManager : MonoBehaviour
         FillTeamBuffsList();
 
         GameObject managerOfTerrain = Instantiate(terrainManager);
+        managerOfTheTerrains = managerOfTerrain.GetComponent<TerrainManager>();
 
         GameObject aiManager = Instantiate(enemyManager);
         managerOfEnemys = aiManager.GetComponent<EnemyManager>();
@@ -140,6 +159,14 @@ public class GameManager : MonoBehaviour
         livesText.text = "Lives: " + lives;
     }
 
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.S) && !playerBattle.isInBattle)
+        {
+            SaveData();
+        }
+    }
+
     public void GoToNextPickUp()
     {
         currentPickUp++;
@@ -148,18 +175,20 @@ public class GameManager : MonoBehaviour
     public void ChooseMergantsToSpawn(TerrainManager.MapChunksToSpawn whatIsSpawned, bool trainer, Vector3 pos, int lenghtOfGauntlet, 
         List<GameObject> currentTerrainPieces)
     {
+
         if (trainer)
         {
             GenerateTrainer(pos);
-            switch (whatIsSpawned)
+            if (whatIsSpawned == TerrainManager.MapChunksToSpawn.EndOfGame)
             {
-                case TerrainManager.MapChunksToSpawn.EndOfGame:
-                    ColorGroundTerrainPieces(currentTerrainPieces, finalBattleMaterial);
-                    break;
+                ColorGroundTerrainPieces(currentTerrainPieces, finalBattleMaterial);
             }
         } else
         {
-            switch(whatIsSpawned)
+            currentItemsHandedOut.Clear();
+            currentMovesHandedOut.Clear();
+
+            switch (whatIsSpawned)
             {
                 case TerrainManager.MapChunksToSpawn.StartOfMap:
                     GeneratePocketMonsterMergant(pos, currentTerrainPieces);
@@ -204,11 +233,13 @@ public class GameManager : MonoBehaviour
         {
             GeneratePocketMonsterMergant(pos, currentTerrainPieces);
             nextBigPickUp = BigPickups.TeamBuff;
+            currentMergant = CurrentMergant.PocketMonster;
         }
         else
         {
             GenerateTeamBuffMergant(pos, currentTerrainPieces);
             nextBigPickUp = BigPickups.PocketMonster;
+            currentMergant = CurrentMergant.TeamBuff;
         }
     }
 
@@ -217,10 +248,12 @@ public class GameManager : MonoBehaviour
         if (pickups[currentPickUp] == PickupsInGauntlet.Item)
         {
             GenerateItemMergant(pos, currentTerrainPieces);
+            currentMergant = CurrentMergant.Item;
         }
         else
         {
             GenerateMoveMergant(pos, currentTerrainPieces);
+            currentMergant = CurrentMergant.Move;
         }
     }
 
@@ -238,6 +271,7 @@ public class GameManager : MonoBehaviour
         GameObject moveMergant = Instantiate(moveGiver);
         moveMergant.transform.position = pos;
         moveMergant.GetComponent<MoveMergant>().SetGameManager(this);
+        currentMovesHandedOut.Add(movesToHandOut[0]);
         moveMergant.GetComponent<MoveMergant>().SetMove(movesToHandOut[0]);
         movesToHandOut.RemoveAt(0);
         mergants.Add(moveMergant);
@@ -249,6 +283,7 @@ public class GameManager : MonoBehaviour
         GameObject itemMergant = Instantiate(itemGiver);
         itemMergant.transform.position = pos;
         itemMergant.GetComponent<ItemMergant>().SetGameManager(this);
+        currentItemsHandedOut.Add(itemsToHandOut[itemHandOutIndex]);
         itemMergant.GetComponent<ItemMergant>().SetItem(itemsToHandOut[itemHandOutIndex]);
         itemHandOutIndex++;
         mergants.Add(itemMergant);
@@ -273,9 +308,10 @@ public class GameManager : MonoBehaviour
         GameObject opponent = Instantiate(trainer);
         opponent.transform.position = pos;
         opponent.GetComponent<OverworldTrainer>().SetGameManager(this);
-        opponent.GetComponent<OverworldTrainer>().SetTerrainManager(terrainManager.GetComponent<TerrainManager>());
+        opponent.GetComponent<OverworldTrainer>().SetTerrainManager(managerOfTheTerrains);
         opponent.GetComponent<OverworldTrainer>().SetEnemyManager(managerOfEnemys);
         opponent.GetComponent<TrainerAi>().SetInBattleTextManager(battleTextManager);
+        trainers.Add(trainer);
     }
 
     public void ColorGroundTerrainPieces(List<GameObject> currentTerrainPieces, Material material)
@@ -1485,6 +1521,111 @@ public class GameManager : MonoBehaviour
     public void SwitchToStartScreen()
     {
         SceneManager.LoadScene(startScreenName);
+    }
+
+    private void SaveData()
+    {
+        playerPocketMonsterInInt.Clear();
+        playerPocketMonstersAbilityInInt.Clear();
+        playerPocketMonsterItemsInInt.Clear();
+        playerPocketMonsterMovesInInt.Clear();
+
+        for (int i = 0; i < playerPocketMonsters.Count; i++)
+        {
+            string pocketMonsterName = playerPocketMonsters[i].name;
+            string pocketMonsterNumberString = "";
+            int pocketMonsterNumber = 0;
+
+            for (int j = 0; j < pocketMonsterName.Length; j++)
+            {
+                if (char.IsDigit(pocketMonsterName[j]))
+                {
+                    pocketMonsterNumberString += pocketMonsterName[j];
+                }
+            }
+
+            if (pocketMonsterNumberString.Length > 0)
+            {
+                pocketMonsterNumber = int.Parse(pocketMonsterNumberString);
+            }
+
+            playerPocketMonsterInInt.Add(pocketMonsterNumber - 1);
+
+            playerPocketMonstersAbilityInInt.Add(playerPocketMonsters[i].possibleAbilitys.IndexOf(playerPocketMonsters[i].chosenAbility));
+
+            List<int> pocketMonsterItems = new List<int>();
+            for (int j = 0; j < playerPocketMonsters[i].items.Count; j++)
+            {
+                int sameTypeValue = 0;
+                for (int k = 0; k < allPocketMonsterItems.Count; k++)
+                {
+                    if (playerPocketMonsters[i].items[j].GetType() == allPocketMonsterItems[k].GetType())
+                    {
+                        sameTypeValue = k;
+                    }
+                }
+                pocketMonsterItems.Add(sameTypeValue);
+            }
+            playerPocketMonsterItemsInInt.Add(pocketMonsterItems);
+
+            List<int> pocketMonsterMoves = new List<int>();
+            for (int j = 0; j < playerPocketMonsters[i].moves.Count; j++)
+            {
+                int sameTypeValue = 0;
+                for (int k = 0; k < allPocketMonstersMoves.Count; k++)
+                {
+                    if (playerPocketMonsters[i].moves[j].GetType() == allPocketMonstersMoves[k].GetType())
+                    {
+                        sameTypeValue = k;
+                    }
+                }
+                pocketMonsterMoves.Add(sameTypeValue);
+            }
+            playerPocketMonsterMovesInInt.Add(pocketMonsterMoves);
+        }
+
+        TranslateItemsToInt(teamBuffsOfPlayerInInt, teamBuffsOfPlayer, allTeamBuffs);
+        TranslateMovesToInt(allMovesHandedOutInInt, allMovesHandedOut);
+        TranslateItemsToInt(itemsToHandOutInInt, itemsToHandOut, allPocketMonsterItems);
+        TranslateMovesToInt(movesToHandOutInInt, movesToHandOut);
+        TranslateItemsToInt(currentItemsHandedOutInInt, currentItemsHandedOut, allPocketMonsterItems);
+        TranslateMovesToInt(currentMovesHandedOutInInt, currentMovesHandedOut);
+
+        SaveSytem.SaveGame(playerBattle.gameObject, this, managerOfEnemys, managerOfTheTerrains);
+    }
+
+    private void TranslateItemsToInt(List<int> intItemList, List<PocketMonsterItem> actualItemList, List<PocketMonsterItem> itemListToSearchThrough)
+    {
+        intItemList.Clear();
+        for (int i = 0; i < actualItemList.Count; i++)
+        {
+            for (int j = 0; j < itemListToSearchThrough.Count; j++)
+            {
+                int sameTypeValue = 0;
+                if (actualItemList[i].GetType() == itemListToSearchThrough[j].GetType())
+                {
+                    sameTypeValue = j;
+                }
+                intItemList.Add(sameTypeValue);
+            }
+        }
+    }
+
+    private void TranslateMovesToInt(List<int> intMovesList, List<PocketMonsterMoves> actualMovesList)
+    {
+        intMovesList.Clear();
+        for (int i = 0; i < actualMovesList.Count; i++)
+        {
+            for (int j = 0; j < allPocketMonstersMoves.Count; j++)
+            {
+                int sameTypeValue = 0;
+                if (actualMovesList[i].GetType() == allPocketMonstersMoves[j].GetType())
+                {
+                    sameTypeValue = j;
+                }
+                intMovesList.Add(sameTypeValue);
+            }
+        }
     }
 
     private void FillPocketMonsterMoveList()

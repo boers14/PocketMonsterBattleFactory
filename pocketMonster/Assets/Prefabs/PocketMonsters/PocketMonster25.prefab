@@ -1190,12 +1190,12 @@ MonoBehaviour:
     baseSpecialAttack: 15
     baseSpecialDefense: 70
     baseSpeed: 35
+    originalCritChance: 0
     baseStats: []
-    name: Earth/Regular
+    name: Doireann
     typing: 0400000009000000
   health: 0
   amountOfDamageTaken: 0
-  healthAtStartOfTurn: 0
   fainted: 0
   abilityOnTheirTurn: 0
   aftermathOfAbility: 0

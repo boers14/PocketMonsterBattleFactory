@@ -413,7 +413,7 @@ MonoBehaviour:
     baseSpeed: 23
     originalCritChance: 0
     baseStats: []
-    name: Wind/Water
+    name: Jayanti
     typing: 0200000003000000
   health: 0
   amountOfDamageTaken: 0

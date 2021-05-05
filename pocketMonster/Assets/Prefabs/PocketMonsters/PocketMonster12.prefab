@@ -1502,12 +1502,12 @@ MonoBehaviour:
     baseSpecialAttack: 25
     baseSpecialDefense: 90
     baseSpeed: 45
+    originalCritChance: 0
     baseStats: []
-    name: Wind/Light
+    name: Arkadi
     typing: 0300000005000000
   health: 0
   amountOfDamageTaken: 0
-  healthAtStartOfTurn: 0
   fainted: 0
   abilityOnTheirTurn: 0
   aftermathOfAbility: 0

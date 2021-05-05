@@ -9,9 +9,10 @@ public class EnemyManager : MonoBehaviour
 
     public List<PocketMonsterItem> teamBuffsOfAi = new List<PocketMonsterItem>();
 
-    private int teamsCreated = 0, amountOfPocketMonsters = 1, amountOfMoves = 1, amountOfItems = 0, currentIntelligence = 0;
+    public int teamsCreated = 0, amountOfPocketMonsters = 1, amountOfMoves = 1, amountOfItems = 0, currentIntelligence = 0;
 
-    private bool addMove = false, addSameMoveTypes = false;
+    public bool addMove = false;
+    private bool addSameMoveTypes = false;
 
     public int amountOfTeamBuffs = 0;
 

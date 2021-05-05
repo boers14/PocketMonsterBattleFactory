@@ -9,7 +9,6 @@ public class PlayerCam : MonoBehaviour
     [SerializeField]
     private float distanceXZ = 0, distanceY = 0, smoothPos = 0, smoothRot = 0, lookDownFactor = 0;
 
-    // Update is called once per frame
     void FixedUpdate()
     {
         if (!player)
@@ -29,11 +28,11 @@ public class PlayerCam : MonoBehaviour
 
         if (player.eulerAngles.y - transform.localEulerAngles.y < -300)
         {
-            newRotation.y = 360 + (player.eulerAngles.y / 4f);
+            newRotation.y = 360;
         }
         else if (player.eulerAngles.y - transform.localEulerAngles.y > 300)
         {
-            newRotation.y = (player.eulerAngles.y - 360) / 4f;
+            newRotation.y = 1;
         }
 
         transform.eulerAngles = Vector3.Lerp(transform.eulerAngles, new Vector3(lookDownFactor, newRotation.y, 0), Time.deltaTime * smoothRot);

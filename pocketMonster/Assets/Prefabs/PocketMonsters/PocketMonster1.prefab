@@ -492,7 +492,7 @@ MonoBehaviour:
     baseSpeed: 30
     originalCritChance: 0
     baseStats: []
-    name: Water
+    name: Ezra
     typing: 02000000
   health: 0
   amountOfDamageTaken: 0
@@ -506,7 +506,6 @@ MonoBehaviour:
   - {fileID: 1006438734768166460, guid: 8bfb602cd85dc1a419ce39352ed53dcf, type: 3}
   ability: {fileID: 0}
   chosenAbility: {fileID: 0}
-  particleSystem: {fileID: 0}
 --- !u!198 &7410554620504152743
 ParticleSystem:
   m_ObjectHideFlags: 0

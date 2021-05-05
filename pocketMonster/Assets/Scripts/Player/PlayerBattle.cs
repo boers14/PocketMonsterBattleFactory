@@ -23,7 +23,7 @@ public class PlayerBattle : MonoBehaviour
     public TrainerAi opponentTrainer = null;
 
     public bool showAll = false, currentPocketmonsterIsFainted = true, isInAbilityMenu = false, lastPocketmonsterFainted = false, 
-        healNextPocketMonster = false;
+        healNextPocketMonster = false, isInBattle = false;
 
     [SerializeField]
     private float disFromPlayer = 0;

@@ -488,12 +488,12 @@ MonoBehaviour:
     baseSpecialAttack: 100
     baseSpecialDefense: 105
     baseSpeed: 55
+    originalCritChance: 0
     baseStats: []
-    name: Static/Earth
+    name: "M\xE1rton"
     typing: 0400000008000000
   health: 0
   amountOfDamageTaken: 0
-  healthAtStartOfTurn: 0
   fainted: 0
   abilityOnTheirTurn: 0
   aftermathOfAbility: 0

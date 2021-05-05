@@ -800,12 +800,12 @@ MonoBehaviour:
     baseSpecialAttack: 45
     baseSpecialDefense: 40
     baseSpeed: 115
+    originalCritChance: 0
     baseStats: []
-    name: Chemical/Wind
+    name: Aliki
     typing: 0300000007000000
   health: 0
   amountOfDamageTaken: 0
-  healthAtStartOfTurn: 0
   fainted: 0
   abilityOnTheirTurn: 0
   aftermathOfAbility: 0

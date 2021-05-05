@@ -2814,12 +2814,12 @@ MonoBehaviour:
     baseSpecialAttack: 99
     baseSpecialDefense: 55
     baseSpeed: 71
+    originalCritChance: 0
     baseStats: []
-    name: Grass/Spooky
+    name: Nawra
     typing: 0100000006000000
   health: 0
   amountOfDamageTaken: 0
-  healthAtStartOfTurn: 0
   fainted: 0
   abilityOnTheirTurn: 0
   aftermathOfAbility: 0

@@ -567,12 +567,12 @@ MonoBehaviour:
     baseSpecialAttack: 76
     baseSpecialDefense: 84
     baseSpeed: 32
+    originalCritChance: 0
     baseStats: []
-    name: Spooky/Fire
+    name: Pavesi
     typing: 0600000000000000
   health: 0
   amountOfDamageTaken: 0
-  healthAtStartOfTurn: 0
   fainted: 0
   abilityOnTheirTurn: 0
   aftermathOfAbility: 0

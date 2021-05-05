@@ -722,12 +722,12 @@ MonoBehaviour:
     baseSpecialAttack: 200
     baseSpecialDefense: 35
     baseSpeed: 60
+    originalCritChance: 0
     baseStats: []
-    name: RegularBall
+    name: Neelima
     typing: 09000000
   health: 0
   amountOfDamageTaken: 0
-  healthAtStartOfTurn: 0
   fainted: 0
   abilityOnTheirTurn: 0
   aftermathOfAbility: 0

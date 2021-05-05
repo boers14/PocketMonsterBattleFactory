@@ -568,7 +568,7 @@ MonoBehaviour:
     baseSpeed: 80
     originalCritChance: 0
     baseStats: []
-    name: WaterBall
+    name: Nomusa
     typing: 02000000
   health: 0
   amountOfDamageTaken: 0

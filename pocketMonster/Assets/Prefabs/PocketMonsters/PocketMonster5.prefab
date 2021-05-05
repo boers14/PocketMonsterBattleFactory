@@ -644,12 +644,12 @@ MonoBehaviour:
     baseSpecialAttack: 135
     baseSpecialDefense: 40
     baseSpeed: 90
+    originalCritChance: 0
     baseStats: []
-    name: Static
+    name: Normand
     typing: 08000000
   health: 0
   amountOfDamageTaken: 0
-  healthAtStartOfTurn: 0
   fainted: 0
   abilityOnTheirTurn: 0
   aftermathOfAbility: 0

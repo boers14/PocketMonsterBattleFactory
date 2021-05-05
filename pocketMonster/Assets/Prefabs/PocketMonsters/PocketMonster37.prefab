@@ -800,12 +800,12 @@ MonoBehaviour:
     baseSpecialAttack: 15
     baseSpecialDefense: 20
     baseSpeed: 5
+    originalCritChance: 0
     baseStats: []
-    name: Earth/Chemical
+    name: Szabolcsi
     typing: 0400000007000000
   health: 0
   amountOfDamageTaken: 0
-  healthAtStartOfTurn: 0
   fainted: 0
   abilityOnTheirTurn: 0
   aftermathOfAbility: 0

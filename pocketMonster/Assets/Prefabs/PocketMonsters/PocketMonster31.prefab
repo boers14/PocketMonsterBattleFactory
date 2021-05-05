@@ -644,12 +644,12 @@ MonoBehaviour:
     baseSpecialAttack: 83
     baseSpecialDefense: 123
     baseSpeed: 21
+    originalCritChance: 0
     baseStats: []
-    name: Water/Regular
+    name: Sonam
     typing: 0200000009000000
   health: 0
   amountOfDamageTaken: 0
-  healthAtStartOfTurn: 0
   fainted: 0
   abilityOnTheirTurn: 0
   aftermathOfAbility: 0

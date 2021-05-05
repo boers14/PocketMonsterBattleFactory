@@ -488,12 +488,12 @@ MonoBehaviour:
     baseSpecialAttack: 27
     baseSpecialDefense: 73
     baseSpeed: 8
+    originalCritChance: 0
     baseStats: []
-    name: Chemical/Spooky
+    name: Ahti
     typing: 0700000006000000
   health: 0
   amountOfDamageTaken: 0
-  healthAtStartOfTurn: 0
   fainted: 0
   abilityOnTheirTurn: 0
   aftermathOfAbility: 0

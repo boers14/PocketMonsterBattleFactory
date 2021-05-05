@@ -8,8 +8,7 @@ public class TerrainManager : MonoBehaviour
     private GameObject startSpawn = null, firstStop = null, midwayMiddleStop = null, bigStop = null, midwayStopOnSide = null, battleAlley = null,
         endStopSmall = null, endStopMiddle = null, battleArena = null;
 
-    [SerializeField]
-    private int lengthOfRun = 6;
+    public int lengthOfRun = 6;
 
     public int currentLenght = 2, currentPlaceInGuantlet = 0;
 
@@ -30,21 +29,27 @@ public class TerrainManager : MonoBehaviour
         LastBattle
     }
 
-    public MapChunksToSpawn whatToSpawn = MapChunksToSpawn.StartOfMap;
+    public MapChunksToSpawn whatToSpawn = MapChunksToSpawn.StartOfMap, currentMapChunk = MapChunksToSpawn.StartOfMap;
 
     public LandingTeleporter.SpawnPosition path = LandingTeleporter.SpawnPosition.Middle;
 
-    [SerializeField]
-    private Vector3 nextChunkPos = Vector3.zero;
+    public Vector3 nextChunkPos = Vector3.zero;
 
     public Vector3 arenaPos = new Vector3(-50, 0, -50);
 
-    private List<GameObject> currentTerrainPieces = new List<GameObject>();
+    public List<GameObject> currentTerrainPieces = new List<GameObject>(), battleSpots = new List<GameObject>();
 
     private void Start()
     {
-        GameObject runSettingManager = GameObject.FindGameObjectsWithTag("RunSettingsManager")[0];
-        lengthOfRun = runSettingManager.GetComponent<RunSettingsManager>().lenghtOfRun;
+        GameObject runSettingManager = GameObject.FindGameObjectWithTag("RunSettingsManager");
+        if (runSettingManager != null)
+        {
+            lengthOfRun = runSettingManager.GetComponent<RunSettingsManager>().lenghtOfRun;
+        } else
+        {
+            lengthOfRun = 6;
+        }
+
         Destroy(runSettingManager);
     }
 
@@ -77,6 +82,7 @@ public class TerrainManager : MonoBehaviour
 
         GameObject battleSpot = CreateBattleAlley(teleporters);
 
+        currentMapChunk = whatToSpawn;
         whatToSpawn = MapChunksToSpawn.SecondPocketMonster;
     }
 
@@ -148,6 +154,7 @@ public class TerrainManager : MonoBehaviour
             landingTeleporters.Add(arrivalTeleporters[i].GetComponent<LandingTeleporter>());
         }
 
+        currentMapChunk = whatToSpawn;
         whatToSpawn = MapChunksToSpawn.FirstMoveSelection;
 
         return landingTeleporters;
@@ -186,6 +193,7 @@ public class TerrainManager : MonoBehaviour
 
         path = direction;
 
+        currentMapChunk = whatToSpawn;
         whatToSpawn = MapChunksToSpawn.SecondMoveSelection;
 
         return landingTeleporters;
@@ -215,6 +223,7 @@ public class TerrainManager : MonoBehaviour
 
         path = direction;
 
+        currentMapChunk = whatToSpawn;
         whatToSpawn = MapChunksToSpawn.ThirdPocketMonster;
 
         return landingTeleporters;
@@ -245,6 +254,7 @@ public class TerrainManager : MonoBehaviour
 
         path = LandingTeleporter.SpawnPosition.Middle;
 
+        currentMapChunk = whatToSpawn;
         whatToSpawn = MapChunksToSpawn.StartOfGauntlet;
 
         return landingTeleporters;
@@ -297,6 +307,7 @@ public class TerrainManager : MonoBehaviour
 
         currentPlaceInGuantlet++;
 
+        currentMapChunk = whatToSpawn;
         if (currentLenght - 1 == currentPlaceInGuantlet)
         {
             whatToSpawn = MapChunksToSpawn.EndOfGuantlet;
@@ -349,6 +360,7 @@ public class TerrainManager : MonoBehaviour
 
         currentPlaceInGuantlet++;
 
+        currentMapChunk = whatToSpawn;
         if (currentLenght - 1 == currentPlaceInGuantlet)
         {
             whatToSpawn = MapChunksToSpawn.EndOfGuantlet;
@@ -416,6 +428,7 @@ public class TerrainManager : MonoBehaviour
         path = neededDirection;
         currentPlaceInGuantlet++;
 
+        currentMapChunk = whatToSpawn;
         if (currentLenght + 1 >= lengthOfRun)
         {
             whatToSpawn = MapChunksToSpawn.EndOfGame;
@@ -452,6 +465,7 @@ public class TerrainManager : MonoBehaviour
 
         path = LandingTeleporter.SpawnPosition.Middle;
 
+        currentMapChunk = whatToSpawn;
         whatToSpawn = MapChunksToSpawn.StartOfGauntlet;
 
         currentLenght++;
@@ -480,6 +494,7 @@ public class TerrainManager : MonoBehaviour
             landingTeleporters.Add(arrivalTeleporters[i].GetComponent<LandingTeleporter>());
         }
 
+        battleSpots.Add(lastItemRound);
         ClearTerrainPieces(false);
         GameObject battleSpot = Instantiate(startSpawn);
         battleSpot.transform.position = nextChunkPos;
@@ -500,6 +515,7 @@ public class TerrainManager : MonoBehaviour
         }
 
         path = LandingTeleporter.SpawnPosition.Middle;
+        currentMapChunk = whatToSpawn;
         whatToSpawn = MapChunksToSpawn.LastBattle;
 
         return landingTeleporters;
@@ -543,6 +559,7 @@ public class TerrainManager : MonoBehaviour
         List<GameObject> leaveTeleporterOfAlley = new List<GameObject>();
         GetAllTeleporters(battleSpot, leaveTeleporterOfAlley, "LeaveTeleporter");
         teleporterOfAlley[0].GetComponent<BattleLandingTeleporter>().SetConnectedTeleporter(leaveTeleporterOfAlley[0].GetComponent<BattleAlleyTeleporter>());
+        battleSpots.Add(battleSpot);
 
         return battleSpot;
     }

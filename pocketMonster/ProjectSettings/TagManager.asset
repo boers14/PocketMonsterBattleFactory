@@ -9,6 +9,7 @@ TagManager:
   - LandingTeleporter
   - Ground
   - RunSettingsManager
+  - TerrainManager
   layers:
   - Default
   - TransparentFX

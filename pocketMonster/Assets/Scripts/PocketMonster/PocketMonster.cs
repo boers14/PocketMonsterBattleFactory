@@ -40,7 +40,7 @@ public class PocketMonster : MonoBehaviour
     private float yMotionSpace = 0.5f;
     private Vector3 battlePos = Vector3.zero;
 
-    private ParticleSystem particleSystem = null;
+    private new ParticleSystem particleSystem = null;
 
     private List<PocketMonsterStats.Typing> originalTyping = new List<PocketMonsterStats.Typing>();
 

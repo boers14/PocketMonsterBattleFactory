@@ -61,6 +61,7 @@ public class OverworldTrainer : MonoBehaviour
             pocketMonsterTeam = enemyManager.createTeamForAi(GetComponent<TrainerAi>());
             GetComponent<TrainerAi>().AddpocketMonsters(pocketMonsterTeam, enemyManager.teamBuffsOfAi, player.GetComponent<PlayerBattle>());
             LoadPlayerStats();
+            player.GetComponent<PlayerBattle>().isInBattle = true;
         } else
         {
             gameManager.livesText.gameObject.SetActive(true);
@@ -76,6 +77,7 @@ public class OverworldTrainer : MonoBehaviour
             }
 
             player.GetComponent<PlayerMovement>().enabled = true;
+            player.GetComponent<PlayerBattle>().isInBattle = false;
             player.GetComponent<PlayerBattle>().enabled = false;
 
             if (gameManager.lastBattle && playerWon)
@@ -92,6 +94,7 @@ public class OverworldTrainer : MonoBehaviour
             {
                 if (playerWon)
                 {
+                    gameManager.trainers.Remove(gameObject);
                     Destroy(gameObject);
                     player.transform.position = meetPosInWorld;
                     cam.transform.position = meetPosInWorld;
@@ -111,6 +114,7 @@ public class OverworldTrainer : MonoBehaviour
                 }
             } else
             {
+                gameManager.trainers.Remove(gameObject);
                 Destroy(gameObject);
                 player.transform.position = meetPosInWorld;
                 cam.transform.position = meetPosInWorld;

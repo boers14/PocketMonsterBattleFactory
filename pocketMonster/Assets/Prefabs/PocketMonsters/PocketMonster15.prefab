@@ -566,12 +566,12 @@ MonoBehaviour:
     baseSpecialAttack: 75
     baseSpecialDefense: 75
     baseSpeed: 75
+    originalCritChance: 0
     baseStats: []
-    name: Regular/Spooky
+    name: Sima
     typing: 0600000009000000
   health: 0
   amountOfDamageTaken: 0
-  healthAtStartOfTurn: 0
   fainted: 0
   abilityOnTheirTurn: 0
   aftermathOfAbility: 0

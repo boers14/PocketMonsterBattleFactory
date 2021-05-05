@@ -1035,12 +1035,12 @@ MonoBehaviour:
     baseSpecialAttack: 150
     baseSpecialDefense: 5
     baseSpeed: 50
+    originalCritChance: 0
     baseStats: []
-    name: Chemical/Static
+    name: "B\xE9bhionn"
     typing: 0700000008000000
   health: 0
   amountOfDamageTaken: 0
-  healthAtStartOfTurn: 0
   fainted: 0
   abilityOnTheirTurn: 0
   aftermathOfAbility: 0

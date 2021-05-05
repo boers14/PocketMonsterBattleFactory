@@ -334,7 +334,7 @@ MonoBehaviour:
     baseSpeed: 100
     originalCritChance: 0
     baseStats: []
-    name: Spooky
+    name: "Hal\xE1sz"
     typing: 06000000
   health: 0
   amountOfDamageTaken: 0

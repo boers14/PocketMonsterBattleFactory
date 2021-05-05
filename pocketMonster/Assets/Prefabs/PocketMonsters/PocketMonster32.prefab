@@ -831,7 +831,7 @@ MonoBehaviour:
     baseSpeed: 105
     originalCritChance: 0
     baseStats: []
-    name: Regular/Static
+    name: Torosyan
     typing: 0900000008000000
   health: 0
   amountOfDamageTaken: 0

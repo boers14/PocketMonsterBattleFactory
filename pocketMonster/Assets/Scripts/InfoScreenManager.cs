@@ -95,7 +95,7 @@ public class InfoScreenManager : MonoBehaviour
         controlsExplanation.text = "Use WSAD to move around. Press Z to start running.\n\nPress X to open the type chart. Left click on the type chart to " +
             "switch to the statusses chart.\n\nPress C to open up the pocketmonster menu. Hover over moves/ items/ abilitys to see what it does. Click on a" +
             " pocketmonster to drag it around and switch positions in the party.\n\nPress V to open up the guantlet map. Click and move the mouse around " +
-            "to move the map. Hover over the texts to see what certain objectives do.";
+            "to move the map. Hover over the texts to see what certain objectives do.\n\nPress S outside of battle to save the game.";
         StartCoroutine(SetMaxFontSize(controlsExplanation));
         allTexts.Add(controlsExplanation);
 

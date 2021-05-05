@@ -1193,7 +1193,7 @@ MonoBehaviour:
     baseSpeed: 65
     originalCritChance: 0
     baseStats: []
-    name: Light
+    name: Shakuntala
     typing: 05000000
   health: 0
   amountOfDamageTaken: 0

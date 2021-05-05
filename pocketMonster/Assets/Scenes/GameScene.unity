@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.4465782, g: 0.49641252, b: 0.5748167, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -406,8 +406,15 @@ MonoBehaviour:
     type: 3}
   imagePrefab: {fileID: 8115841876542924456, guid: c2c39f54d58a5644d816ae27f0c7317e,
     type: 3}
+  livesText: {fileID: 0}
+  mergants: []
+  trainers: []
+  currentMergant: 2
+  lives: 3
   pickups: 
   nextBigPickUp: 1
+  currentPickUp: 0
+  itemHandOutIndex: 0
   lastBattle: 0
   startScreenName: StartScene
   teamBuffMaterial: {fileID: 2100000, guid: 739f82f75875c0a4abb4fc82b37ad34a, type: 2}
@@ -416,6 +423,14 @@ MonoBehaviour:
     type: 2}
   itemMaterial: {fileID: 2100000, guid: 6a5e07ef9a816c04d843ce651da607e7, type: 2}
   moveMaterial: {fileID: 2100000, guid: 3e7d17707d3bedb48a7f74bcf18402f1, type: 2}
+  playerPocketMonsterInInt: 
+  playerPocketMonstersAbilityInInt: 
+  teamBuffsOfPlayerInInt: 
+  allMovesHandedOutInInt: 
+  itemsToHandOutInInt: 
+  movesToHandOutInInt: 
+  currentMovesHandedOutInInt: 
+  currentItemsHandedOutInInt: 
 --- !u!1 &963194225
 GameObject:
   m_ObjectHideFlags: 0
@@ -515,8 +530,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   distanceXZ: 7
   distanceY: 4
-  smoothPos: 10
-  smoothRot: 10
+  smoothPos: 20
+  smoothRot: 20
   lookDownFactor: 10
 --- !u!114 &963194230
 MonoBehaviour:

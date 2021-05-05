@@ -722,12 +722,12 @@ MonoBehaviour:
     baseSpecialAttack: 60
     baseSpecialDefense: 30
     baseSpeed: 95
+    originalCritChance: 0
     baseStats: []
-    name: StaticBall
+    name: Hosea
     typing: 08000000
   health: 0
   amountOfDamageTaken: 0
-  healthAtStartOfTurn: 0
   fainted: 0
   abilityOnTheirTurn: 0
   aftermathOfAbility: 0

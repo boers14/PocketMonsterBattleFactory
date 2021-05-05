@@ -1269,12 +1269,12 @@ MonoBehaviour:
     baseSpecialAttack: 200
     baseSpecialDefense: 65
     baseSpeed: 50
+    originalCritChance: 0
     baseStats: []
-    name: LightBall
+    name: "Nov\xE1k"
     typing: 05000000
   health: 0
   amountOfDamageTaken: 0
-  healthAtStartOfTurn: 0
   fainted: 0
   abilityOnTheirTurn: 0
   aftermathOfAbility: 0
