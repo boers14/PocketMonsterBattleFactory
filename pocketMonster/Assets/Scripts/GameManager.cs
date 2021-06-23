@@ -115,44 +115,175 @@ public class GameManager : MonoBehaviour
         FillPocketMonsterItemList();
         FillTeamBuffsList();
 
-        GameObject managerOfTerrain = Instantiate(terrainManager);
-        managerOfTheTerrains = managerOfTerrain.GetComponent<TerrainManager>();
-
-        GameObject aiManager = Instantiate(enemyManager);
-        managerOfEnemys = aiManager.GetComponent<EnemyManager>();
-        managerOfEnemys.SetGameManager(this);
-        managerOfEnemys.SetTerrainManager(managerOfTerrain.GetComponent<TerrainManager>());
-
-        GameObject textMessagerInBattle = Instantiate(inBattleTextManager);
-        battleTextManager = textMessagerInBattle.GetComponent<InBattleTextManager>();
-
-        managerOfTerrain.GetComponent<TerrainManager>().SetGameManger(this);
-        managerOfTerrain.GetComponent<TerrainManager>().SpawnStartOfMap();
-
-        int amount = managerOfTerrain.GetComponent<TerrainManager>().GetAmountOfPickupsGenerated();
-        for(int i = 0; i < amount; i++)
+        if (GameObject.FindGameObjectsWithTag("LoadObject").Length > 0)
         {
-            PickupsInGauntlet pickup = PickupsInGauntlet.Item;
+            Destroy(GameObject.FindGameObjectWithTag("LoadObject"));
+            PlayerData data = SaveSytem.LoadGame();
 
-            if (Random.Range(1, 101) > 50)
+            lastBattle = data.lastBattle;
+            itemHandOutIndex = data.itemHandOutIndex;
+            currentPickUp = data.currentPickUp;
+            nextBigPickUp = (BigPickups)System.Enum.Parse(typeof(BigPickups), data.nextBigPickUp);
+            currentMergant = (CurrentMergant)System.Enum.Parse(typeof(CurrentMergant), data.currentMergant);
+
+            GameObject managerOfTerrain = Instantiate(terrainManager);
+            managerOfTheTerrains = managerOfTerrain.GetComponent<TerrainManager>();
+
+            GameObject aiManager = Instantiate(enemyManager);
+            managerOfEnemys = aiManager.GetComponent<EnemyManager>();
+            managerOfEnemys.SetGameManager(this);
+            managerOfEnemys.SetTerrainManager(managerOfTerrain.GetComponent<TerrainManager>());
+            managerOfEnemys.LoadSavedStats(data);
+
+            GameObject textMessagerInBattle = Instantiate(inBattleTextManager);
+            battleTextManager = textMessagerInBattle.GetComponent<InBattleTextManager>();
+
+            managerOfTerrain.GetComponent<TerrainManager>().SetGameManger(this);
+            managerOfTerrain.GetComponent<TerrainManager>().LoadSavedStats(data);
+
+            RecoverMoves(data.allMovesHandedOut, allMovesHandedOut);
+            RecoverItems(data.itemsToHandOut, itemsToHandOut, allPocketMonsterItems);
+            RecoverMoves(data.movesToHandOut, movesToHandOut);
+            RecoverItems(data.currentItemsHandedOut, currentItemsHandedOut, allPocketMonsterItems);
+            RecoverMoves(data.currentMovesHandedOut, currentMovesHandedOut);
+
+            pickups.Clear();
+            for (int i = 0; i < data.pickups.Count; i++)
             {
-                pickup = PickupsInGauntlet.Move;
+                pickups.Add((PickupsInGauntlet)System.Enum.Parse(typeof(PickupsInGauntlet), data.pickups[i]));
             }
-            pickups.Add(pickup);
+
+            for (int i = 0; i < data.mergantPosses.Count; i++)
+            {
+                Vector3 mergantPos = Vector3.zero;
+                mergantPos.x = data.mergantPosses[i][0];
+                mergantPos.y = data.mergantPosses[i][1];
+                mergantPos.z = data.mergantPosses[i][2];
+
+                switch (currentMergant)
+                {
+                    case CurrentMergant.PocketMonster:
+                        GeneratePocketMonsterMergant(mergantPos, managerOfTheTerrains.currentTerrainPieces);
+                        break;
+                    case CurrentMergant.TeamBuff:
+                        GenerateTeamBuffMergant(mergantPos, managerOfTheTerrains.currentTerrainPieces);
+                        break;
+                    case CurrentMergant.Item:
+                        GameObject itemMergant = Instantiate(itemGiver);
+                        itemMergant.transform.position = mergantPos;
+                        itemMergant.GetComponent<ItemMergant>().SetGameManager(this);
+                        itemMergant.GetComponent<ItemMergant>().SetItem(currentItemsHandedOut[i]);
+                        mergants.Add(itemMergant);
+                        ColorGroundTerrainPieces(managerOfTheTerrains.currentTerrainPieces, itemMaterial);
+                        break;
+                    case CurrentMergant.Move:
+                        GameObject moveMergant = Instantiate(moveGiver);
+                        moveMergant.transform.position = mergantPos;
+                        moveMergant.GetComponent<MoveMergant>().SetGameManager(this);
+                        moveMergant.GetComponent<MoveMergant>().SetMove(currentMovesHandedOut[i]);
+                        mergants.Add(moveMergant);
+                        ColorGroundTerrainPieces(managerOfTheTerrains.currentTerrainPieces, moveMaterial);
+                        break;
+                }
+            }
+
+            for (int i = 0; i < data.trainerPosses.Count; i++)
+            {
+                Vector3 trainerPos = Vector3.zero;
+                trainerPos.x = data.trainerPosses[i][0];
+                trainerPos.y = data.trainerPosses[i][1];
+                trainerPos.z = data.trainerPosses[i][2];
+                GenerateTrainer(trainerPos);
+            }
+
+            GameObject go = Instantiate(playerObject);
+            Vector3 playerPos = Vector3.zero;
+            playerPos.x = data.playerPos[0];
+            playerPos.y = data.playerPos[1];
+            playerPos.z = data.playerPos[2];
+            go.transform.position = playerPos;
+            go.GetComponent<PlayerPocketMonsterMenu>().SetGameManager(this);
+            go.GetComponent<CheckGauntletMap>().SetGameManager(this);
+            go.GetComponent<CheckGauntletMap>().SetTerrainManager(managerOfTerrain.GetComponent<TerrainManager>());
+            go.GetComponent<CheckGauntletMap>().SetStartLengthOfRun(managerOfTerrain.GetComponent<TerrainManager>().currentLenght);
+            go.GetComponent<PlayerBattle>().SetInBattleTextManager(textMessagerInBattle.GetComponent<InBattleTextManager>());
+            playerBattle = go.GetComponent<PlayerBattle>();
+
+            RecoverItems(data.teamBuffsOfPlayer, teamBuffsOfPlayer, allTeamBuffs);
+
+            for (int i = 0; i < data.playerPocketMonsters.Count; i++)
+            {
+                PocketMonster addedPocketMonster = Instantiate(allPocketMonsters[data.playerPocketMonsters[i]]);
+                addedPocketMonster.SetAllStats();
+                addedPocketMonster.transform.position = new Vector3(-100, -100, -100);
+
+                addedPocketMonster.chosenAbility = addedPocketMonster.possibleAbilitys[data.playerPocketMonstersAbilitys[i]];
+                addedPocketMonster.chosenAbility.SetAbilityStats(playerBattle);
+
+                for (int j = 0; j < data.playerPocketMonsterMoves[i].Count; j++)
+                {
+                    PocketMonsterMoves moveToAdd = allPocketMonstersMoves[data.playerPocketMonsterMoves[i][j]];
+                    PocketMonsterMoves addedMove = (PocketMonsterMoves)System.Activator.CreateInstance(moveToAdd.GetType());
+                    addedMove.SetMoveStats();
+                    addedPocketMonster.moves.Add(addedMove);
+                }
+
+                for (int j = 0; j < data.playerPocketMonsterItems[i].Count; j++)
+                {
+                    PocketMonsterItem itemToAdd = allPocketMonsterItems[data.playerPocketMonsterItems[i][j]];
+                    PocketMonsterItem addedItem = (PocketMonsterItem)System.Activator.CreateInstance(itemToAdd.GetType());
+                    addedItem.SetStats();
+                    addedPocketMonster.items.Add(addedItem);
+                }
+
+                playerPocketMonsters.Add(addedPocketMonster);
+            }
+
+            textMessagerInBattle.GetComponent<InBattleTextManager>().SetPlayer(playerBattle);
+
+            lives = data.lives;
         }
+        else
+        {
+            GameObject managerOfTerrain = Instantiate(terrainManager);
+            managerOfTheTerrains = managerOfTerrain.GetComponent<TerrainManager>();
 
-        FillItemList();
+            GameObject aiManager = Instantiate(enemyManager);
+            managerOfEnemys = aiManager.GetComponent<EnemyManager>();
+            managerOfEnemys.SetGameManager(this);
+            managerOfEnemys.SetTerrainManager(managerOfTerrain.GetComponent<TerrainManager>());
 
-        GameObject go = Instantiate(playerObject);
-        go.transform.position = initialPlayerPos;
-        go.GetComponent<PlayerPocketMonsterMenu>().SetGameManager(this);
-        go.GetComponent<CheckGauntletMap>().SetGameManager(this);
-        go.GetComponent<CheckGauntletMap>().SetTerrainManager(managerOfTerrain.GetComponent<TerrainManager>());
-        go.GetComponent<CheckGauntletMap>().SetStartLengthOfRun(managerOfTerrain.GetComponent<TerrainManager>().currentLenght);
-        go.GetComponent<PlayerBattle>().SetInBattleTextManager(textMessagerInBattle.GetComponent<InBattleTextManager>());
-        playerBattle = go.GetComponent<PlayerBattle>();
+            GameObject textMessagerInBattle = Instantiate(inBattleTextManager);
+            battleTextManager = textMessagerInBattle.GetComponent<InBattleTextManager>();
 
-        textMessagerInBattle.GetComponent<InBattleTextManager>().SetPlayer(go.GetComponent<PlayerBattle>());
+            managerOfTerrain.GetComponent<TerrainManager>().SetGameManger(this);
+            managerOfTerrain.GetComponent<TerrainManager>().SpawnStartOfMap(true);
+
+            int amount = managerOfTerrain.GetComponent<TerrainManager>().GetAmountOfPickupsGenerated();
+            for (int i = 0; i < amount; i++)
+            {
+                PickupsInGauntlet pickup = PickupsInGauntlet.Item;
+
+                if (Random.Range(1, 101) > 50)
+                {
+                    pickup = PickupsInGauntlet.Move;
+                }
+                pickups.Add(pickup);
+            }
+
+            FillItemList();
+
+            GameObject go = Instantiate(playerObject);
+            go.transform.position = initialPlayerPos;
+            go.GetComponent<PlayerPocketMonsterMenu>().SetGameManager(this);
+            go.GetComponent<CheckGauntletMap>().SetGameManager(this);
+            go.GetComponent<CheckGauntletMap>().SetTerrainManager(managerOfTerrain.GetComponent<TerrainManager>());
+            go.GetComponent<CheckGauntletMap>().SetStartLengthOfRun(managerOfTerrain.GetComponent<TerrainManager>().currentLenght);
+            go.GetComponent<PlayerBattle>().SetInBattleTextManager(textMessagerInBattle.GetComponent<InBattleTextManager>());
+            playerBattle = go.GetComponent<PlayerBattle>();
+
+            textMessagerInBattle.GetComponent<InBattleTextManager>().SetPlayer(playerBattle);
+        }
 
         livesText = Instantiate(textPrefab);
         playerBattle.SetUIPosition(livesText.gameObject, 6, 12, 2, 2, 1, 1);
@@ -311,7 +442,7 @@ public class GameManager : MonoBehaviour
         opponent.GetComponent<OverworldTrainer>().SetTerrainManager(managerOfTheTerrains);
         opponent.GetComponent<OverworldTrainer>().SetEnemyManager(managerOfEnemys);
         opponent.GetComponent<TrainerAi>().SetInBattleTextManager(battleTextManager);
-        trainers.Add(trainer);
+        trainers.Add(opponent);
     }
 
     public void ColorGroundTerrainPieces(List<GameObject> currentTerrainPieces, Material material)
@@ -1590,7 +1721,6 @@ public class GameManager : MonoBehaviour
         TranslateMovesToInt(movesToHandOutInInt, movesToHandOut);
         TranslateItemsToInt(currentItemsHandedOutInInt, currentItemsHandedOut, allPocketMonsterItems);
         TranslateMovesToInt(currentMovesHandedOutInInt, currentMovesHandedOut);
-
         SaveSytem.SaveGame(playerBattle.gameObject, this, managerOfEnemys, managerOfTheTerrains);
     }
 
@@ -1625,6 +1755,24 @@ public class GameManager : MonoBehaviour
                 }
                 intMovesList.Add(sameTypeValue);
             }
+        }
+    }
+
+    private void RecoverMoves(List<int> data, List<PocketMonsterMoves> movesToRecover)
+    {
+        movesToRecover.Clear();
+        for (int i = 0; i < data.Count; i++)
+        {
+            movesToRecover.Add(allPocketMonstersMoves[data[i]]);
+        }
+    }
+
+    private void RecoverItems(List<int> data, List<PocketMonsterItem> itemsToRecover, List<PocketMonsterItem> itemListToSearchThrough)
+    {
+        itemsToRecover.Clear();
+        for (int i = 0; i < data.Count; i++)
+        {
+            itemsToRecover.Add(itemListToSearchThrough[data[i]]);
         }
     }
 

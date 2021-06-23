@@ -2,7 +2,9 @@ save system (deleting files, loading/ saving)
 use attacking move with last breath (particles)
 status effects on switch in (spreading plague)
 end celebration (end screen with particle effects)
-check all info descriptions of info screen
 particles for winning/ losing battle
+Exit game button
+visual for saving
+cant save when game is finished
 
 music making day with bruno?

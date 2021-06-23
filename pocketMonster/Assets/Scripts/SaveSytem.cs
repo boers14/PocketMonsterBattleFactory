@@ -8,12 +8,13 @@ public static class SaveSytem
 {
     public static void SaveGame(GameObject player, GameManager gameManager, EnemyManager enemyManager, TerrainManager terrainManager)
     {
+        DeleteGame();
         BinaryFormatter formatter = new BinaryFormatter();
-        string path = Path.Combine(Application.persistentDataPath, "/savedGame.pocketmonster");
+        string path = Path.Combine(Application.persistentDataPath, "savedGame.pocketmonster");
         using (FileStream stream = new FileStream(path, FileMode.Create))
         {
             PlayerData data = new PlayerData(player, gameManager, enemyManager, terrainManager);
-
+            Debug.Log("saved game");
             formatter.Serialize(stream, data);
             stream.Close();
         }
@@ -21,7 +22,7 @@ public static class SaveSytem
 
     public static PlayerData LoadGame()
     {
-        string path = Path.Combine(Application.persistentDataPath, "/savedGame.pocketmonster");
+        string path = Path.Combine(Application.persistentDataPath, "savedGame.pocketmonster");
         if (File.Exists(path))
         {
             BinaryFormatter formatter = new BinaryFormatter();
@@ -39,26 +40,23 @@ public static class SaveSytem
         }
     }
 
-    //public static void DeleteGame()
-    //{
-    //    string path = Path.Combine(Application.persistentDataPath, "/savedGame.pocketmonster");
-    //    if (File.Exists(path))
-    //    {
-    //        BinaryFormatter formatter = new BinaryFormatter();
-    //        FileStream stream = new FileStream(path, FileMode.);
-
-    //        PlayerData data = formatter.Deserialize(stream) as PlayerData;
-    //        stream.Close();
-    //    }
-    //    else
-    //    {
-    //        Debug.LogError("No file found");
-    //    }
-    //}
+    public static void DeleteGame()
+    {
+        string path = Path.Combine(Application.persistentDataPath, "savedGame.pocketmonster");
+        if (File.Exists(path))
+        {
+            File.Delete(path);
+            Debug.Log("deleted game");
+        }
+        else
+        {
+            Debug.LogError("No file found");
+        }
+    }
 
     public static bool CheckIfFileExist()
     {
-        string path = Path.Combine(Application.persistentDataPath, "/savedGame.pocketmonster");
+        string path = Path.Combine(Application.persistentDataPath, "savedGame.pocketmonster");
         if (File.Exists(path))
         {
             return true;

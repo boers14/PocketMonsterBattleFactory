@@ -11,6 +11,7 @@ TagManager:
   - RunSettingsManager
   - TerrainManager
   - EnvironmentObject
+  - LoadObject
   layers:
   - Default
   - TransparentFX

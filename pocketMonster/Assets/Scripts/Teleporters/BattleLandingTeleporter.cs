@@ -7,12 +7,14 @@ public class BattleLandingTeleporter : LandingTeleporter
     public BattleAlleyTeleporter connectedTeleporter = null;
 
     private TerrainManager terrainManager;
-
-    public void SetTeleporterData(Teleporter teleporter)
+     
+    public void SetTeleporterData(SpawnPosition spawnPosOfteleporter)
     {
-        spawnPosition = teleporter.spawnPosition;
+        spawnPosition = spawnPosOfteleporter;
 
         List<LandingTeleporter> landingTeleporters = terrainManager.DecideNextSpawnOfMap(spawnPosition);
+
+        terrainManager.spawnPosition = spawnPosition;
 
         for (int i = 0; i < landingTeleporters.Count; i++)
         {

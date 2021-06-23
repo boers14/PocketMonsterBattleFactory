@@ -25,7 +25,7 @@ public class PlayerData
     // Terrain manager
     public int lengthOfRun, currentLenght, currentPlaceInGuantlet;
     public string whatToSpawn, currentMapChunk;
-    public string path;
+    public string path, teleporterSpawnPos;
     public float[] nextChunkPos;
     public List<float[]> battleSpotsPosses, currentTerrainPiecesPosses;
 
@@ -86,6 +86,7 @@ public class PlayerData
         nextChunkPos[2] = terrainManager.nextChunkPos.z;
         battleSpotsPosses = FillPosList(terrainManager.battleSpots, battleSpotsPosses);
         currentTerrainPiecesPosses = FillPosList(terrainManager.currentTerrainPieces, currentTerrainPiecesPosses);
+        teleporterSpawnPos = terrainManager.spawnPosition.ToString();
     }
 
     private List<float[]> FillPosList(List<GameObject> neededPossesList, List<float[]> ownList)

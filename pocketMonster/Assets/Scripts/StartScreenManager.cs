@@ -19,7 +19,7 @@ public class StartScreenManager : MonoBehaviour
     private Image bg = null;
 
     [SerializeField]
-    private string gameScene = "", instructionScene = "";
+    private string chooseGameStateScene = "", instructionScene = "";
 
     void Start()
     {
@@ -40,6 +40,7 @@ public class StartScreenManager : MonoBehaviour
         titel.text = "Pocketmonster Battle Factory";
         titel.alignment = TextAnchor.MiddleCenter;
         titel.resizeTextMaxSize = 70;
+        titel.fontStyle = FontStyle.Bold;
 
         Button startButton = Instantiate(uiButton);
         startButton.transform.SetParent(canvas.transform);
@@ -52,7 +53,7 @@ public class StartScreenManager : MonoBehaviour
         startButton.GetComponent<RectTransform>().localPosition = Vector3.zero;
 
         startButton.GetComponentInChildren<Text>().text = "Play!";
-        startButton.onClick.AddListener(() => switchScene(gameScene));
+        startButton.onClick.AddListener(() => switchScene(chooseGameStateScene));
 
         Button infoButton = Instantiate(uiButton);
         infoButton.transform.SetParent(canvas.transform);

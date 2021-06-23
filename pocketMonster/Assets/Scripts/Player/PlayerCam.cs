@@ -11,14 +11,14 @@ public class PlayerCam : MonoBehaviour
 
     private List<GameObject> allObjectsInFrontOfCam = new List<GameObject>();
 
-    void LateUpdate()
+    void FixedUpdate()
     {
         if (!player)
         {
-            GameObject[] possiblePlayer = GameObject.FindGameObjectsWithTag("Player");
-            if (possiblePlayer.Length > 0)
+            GameObject possiblePlayer = GameObject.FindGameObjectWithTag("Player");
+            if (possiblePlayer != null)
             {
-                player = possiblePlayer[0].transform;
+                player = possiblePlayer.transform;
             }
             return;
         }

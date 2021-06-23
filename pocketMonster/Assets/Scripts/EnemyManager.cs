@@ -560,6 +560,17 @@ public class EnemyManager : MonoBehaviour
         }
     }
 
+    public void LoadSavedStats(PlayerData data)
+    {
+        teamsCreated = data.teamsCreated;
+        amountOfPocketMonsters = data.amountOfPocketMonsters;
+        amountOfMoves = data.amountOfMoves;
+        amountOfItems = data.amountOfItems;
+        currentIntelligence = data.currentIntelligence;
+        amountOfTeamBuffs = data.amountOfTeamBuffs;
+        addMove = data.addMove;
+    }
+
     public void SetGameManager(GameManager gameManager)
     {
         this.gameManager = gameManager;

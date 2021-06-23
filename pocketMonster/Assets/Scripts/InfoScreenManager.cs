@@ -32,7 +32,6 @@ public class InfoScreenManager : MonoBehaviour
 
     private Button prevPageButton = null, nextPageButton = null;
     private Text pageCount = null;
-    private int maxFontSize = 0;
 
     void Start()
     {

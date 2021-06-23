@@ -14,6 +14,8 @@ public class TerrainManager : MonoBehaviour
 
     private GameManager gameManager;
 
+    public LandingTeleporter.SpawnPosition spawnPosition = LandingTeleporter.SpawnPosition.Middle;
+
     public enum MapChunksToSpawn
     {
         StartOfMap,
@@ -51,6 +53,9 @@ public class TerrainManager : MonoBehaviour
         }
 
         Destroy(runSettingManager);
+
+        GameObject arena = Instantiate(battleArena);
+        arena.transform.position = arenaPos;
     }
 
     public int GetAmountOfPickupsGenerated()
@@ -65,24 +70,27 @@ public class TerrainManager : MonoBehaviour
         return amount;
     }
 
-    public void SpawnStartOfMap()
+    public void SpawnStartOfMap(bool createBattleAlley)
     {
         ClearTerrainPieces(true);
-        GameObject arena = Instantiate(battleArena);
-        arena.transform.position = arenaPos;
-
         GameObject startOfMap = Instantiate(startSpawn);
         startOfMap.transform.position = nextChunkPos;
         currentTerrainPieces.Add(startOfMap);
-        gameManager.ChooseMergantsToSpawn(whatToSpawn, false, nextChunkPos, currentLenght, currentTerrainPieces);
-        SetNextChunkPos();
+        if (createBattleAlley)
+        {
+            gameManager.ChooseMergantsToSpawn(whatToSpawn, false, nextChunkPos, currentLenght, currentTerrainPieces);
+        }
+        SetNextChunkPos(createBattleAlley);
 
         List<GameObject> teleporters = new List<GameObject>();
         GetAllTeleporters(startOfMap, teleporters, "LeaveTeleporter");
 
-        GameObject battleSpot = CreateBattleAlley(teleporters);
+        if (createBattleAlley)
+        {
+            GameObject battleSpot = CreateBattleAlley(teleporters, true);
+        }
 
-        currentMapChunk = whatToSpawn;
+        currentMapChunk = MapChunksToSpawn.StartOfMap;
         whatToSpawn = MapChunksToSpawn.SecondPocketMonster;
     }
 
@@ -93,35 +101,35 @@ public class TerrainManager : MonoBehaviour
         switch (whatToSpawn)
         {
             case MapChunksToSpawn.StartOfMap:
-                SpawnStartOfMap();
+                SpawnStartOfMap(true);
                 print("Reset?");
                 break;
             case MapChunksToSpawn.SecondPocketMonster:
-                landingTeleporters = CreateFirstStop(landingTeleporters, direction);
+                landingTeleporters = CreateFirstStop(landingTeleporters, direction, true);
                 break;
             case MapChunksToSpawn.FirstMoveSelection:
-                landingTeleporters = CreateFirstMoveSelection(landingTeleporters, direction);
+                landingTeleporters = CreateFirstMoveSelection(landingTeleporters, direction, true);
                 break;
             case MapChunksToSpawn.SecondMoveSelection:
-                landingTeleporters = CreateSecondMoveSelection(landingTeleporters, direction);
+                landingTeleporters = CreateSecondMoveSelection(landingTeleporters, direction, true);
                 break;
             case MapChunksToSpawn.ThirdPocketMonster:
-                landingTeleporters = CreateThirdPocketMonsterSelection(landingTeleporters, direction);
+                landingTeleporters = CreateThirdPocketMonsterSelection(landingTeleporters, direction, true);
                 break;
             case MapChunksToSpawn.StartOfGauntlet:
-                landingTeleporters = CreateStartOfGauntlet(landingTeleporters, direction);
+                landingTeleporters = CreateStartOfGauntlet(landingTeleporters, direction, true);
                 break;
             case MapChunksToSpawn.MidGauntlet:
-                landingTeleporters = CreateMidGuantlet(landingTeleporters, direction);
+                landingTeleporters = CreateMidGuantlet(landingTeleporters, direction, true);
                 break;
             case MapChunksToSpawn.EndOfGuantlet:
-                landingTeleporters = CreateEndGuantlet(landingTeleporters, direction);
+                landingTeleporters = CreateEndGuantlet(landingTeleporters, direction, true);
                 break;
             case MapChunksToSpawn.BigItemRound:
-                landingTeleporters = CreateBigItemRound(landingTeleporters, direction);
+                landingTeleporters = CreateBigItemRound(landingTeleporters, direction, true);
                 break;
             case MapChunksToSpawn.EndOfGame:
-                landingTeleporters = CreateEndOfGame(landingTeleporters, direction);
+                landingTeleporters = CreateEndOfGame(landingTeleporters, direction, true);
                 break;
             default:
                 print("No map pieces found to spawn");
@@ -131,19 +139,26 @@ public class TerrainManager : MonoBehaviour
         return landingTeleporters;
     }
 
-    private List<LandingTeleporter> CreateFirstStop(List<LandingTeleporter> landingTeleporters, LandingTeleporter.SpawnPosition direction)
+    private List<LandingTeleporter> CreateFirstStop(List<LandingTeleporter> landingTeleporters, 
+        LandingTeleporter.SpawnPosition direction, bool createBattleAlley)
     {
         ClearTerrainPieces(true);
         GameObject firstStopChunk = Instantiate(firstStop);
         firstStopChunk.transform.position = nextChunkPos;
         currentTerrainPieces.Add(firstStopChunk);
-        gameManager.ChooseMergantsToSpawn(whatToSpawn, false, nextChunkPos, currentLenght, currentTerrainPieces);
-        SetNextChunkPos();
+        if (createBattleAlley)
+        {
+            gameManager.ChooseMergantsToSpawn(whatToSpawn, false, nextChunkPos, currentLenght, currentTerrainPieces);
+        }
+        SetNextChunkPos(createBattleAlley);
 
         List<GameObject> teleporters = new List<GameObject>();
         GetAllTeleporters(firstStopChunk, teleporters, "LeaveTeleporter");
 
-        GameObject battleSpot = CreateBattleAlley(teleporters);
+        if (createBattleAlley)
+        {
+            GameObject battleSpot = CreateBattleAlley(teleporters, true);
+        }
 
         List<GameObject> arrivalTeleporters = new List<GameObject>();
         GetAllTeleporters(firstStopChunk, arrivalTeleporters, "LandingTeleporter");
@@ -154,13 +169,14 @@ public class TerrainManager : MonoBehaviour
             landingTeleporters.Add(arrivalTeleporters[i].GetComponent<LandingTeleporter>());
         }
 
-        currentMapChunk = whatToSpawn;
+        currentMapChunk = MapChunksToSpawn.SecondPocketMonster;
         whatToSpawn = MapChunksToSpawn.FirstMoveSelection;
 
         return landingTeleporters;
     }
 
-    private List<LandingTeleporter> CreateFirstMoveSelection(List<LandingTeleporter> landingTeleporters, LandingTeleporter.SpawnPosition direction)
+    private List<LandingTeleporter> CreateFirstMoveSelection(List<LandingTeleporter> landingTeleporters,
+        LandingTeleporter.SpawnPosition direction, bool createBattleAlley)
     {
         ClearTerrainPieces(true);
         List<GameObject> teleporters = new List<GameObject>();
@@ -169,10 +185,13 @@ public class TerrainManager : MonoBehaviour
         for (int i = 0; i < 2; i++)
         {
             GameObject firstStopChunk = Instantiate(firstStop);
-            SetGauntlerChunkPosAndSetTeleporters(firstStopChunk, teleporters, arrivalTeleporters, i);
+            SetGauntlerChunkPosAndSetTeleporters(firstStopChunk, teleporters, arrivalTeleporters, i, createBattleAlley);
         }
 
-        GameObject battleSpot = CreateBattleAlley(teleporters);
+        if (createBattleAlley)
+        {
+            GameObject battleSpot = CreateBattleAlley(teleporters, true);
+        }
 
         for (int i = 0; i < arrivalTeleporters.Count; i++)
         {
@@ -193,13 +212,14 @@ public class TerrainManager : MonoBehaviour
 
         path = direction;
 
-        currentMapChunk = whatToSpawn;
+        currentMapChunk = MapChunksToSpawn.FirstMoveSelection;
         whatToSpawn = MapChunksToSpawn.SecondMoveSelection;
 
         return landingTeleporters;
     }
 
-    private List<LandingTeleporter> CreateSecondMoveSelection(List<LandingTeleporter> landingTeleporters, LandingTeleporter.SpawnPosition direction)
+    private List<LandingTeleporter> CreateSecondMoveSelection(List<LandingTeleporter> landingTeleporters, 
+        LandingTeleporter.SpawnPosition direction, bool createBattleAlley)
     {
         ClearTerrainPieces(true);
         List<GameObject> teleporters = new List<GameObject>();
@@ -208,10 +228,13 @@ public class TerrainManager : MonoBehaviour
         for (int i = 0; i < 2; i++)
         {
             GameObject firstStopChunk = Instantiate(endStopSmall);
-            SetGauntlerChunkPosAndSetTeleporters(firstStopChunk, teleporters, arrivalTeleporters, i);
+            SetGauntlerChunkPosAndSetTeleporters(firstStopChunk, teleporters, arrivalTeleporters, i, createBattleAlley);
         }
 
-        GameObject battleSpot = CreateBattleAlley(teleporters);
+        if (createBattleAlley)
+        {
+            GameObject battleSpot = CreateBattleAlley(teleporters, true);
+        }
 
         for (int i = 0; i < arrivalTeleporters.Count; i++)
         {
@@ -223,25 +246,32 @@ public class TerrainManager : MonoBehaviour
 
         path = direction;
 
-        currentMapChunk = whatToSpawn;
+        currentMapChunk = MapChunksToSpawn.SecondMoveSelection;
         whatToSpawn = MapChunksToSpawn.ThirdPocketMonster;
 
         return landingTeleporters;
     }
 
-    private List<LandingTeleporter> CreateThirdPocketMonsterSelection(List<LandingTeleporter> landingTeleporters, LandingTeleporter.SpawnPosition direction)
+    private List<LandingTeleporter> CreateThirdPocketMonsterSelection(List<LandingTeleporter> landingTeleporters, 
+        LandingTeleporter.SpawnPosition direction, bool createBattleAlley)
     {
         ClearTerrainPieces(true);
         GameObject thirdPocketMonster = Instantiate(midwayMiddleStop);
         thirdPocketMonster.transform.position = nextChunkPos;
         currentTerrainPieces.Add(thirdPocketMonster);
-        gameManager.ChooseMergantsToSpawn(whatToSpawn, false, nextChunkPos, currentLenght, currentTerrainPieces);
-        SetNextChunkPos();
+        if (createBattleAlley)
+        {
+            gameManager.ChooseMergantsToSpawn(whatToSpawn, false, nextChunkPos, currentLenght, currentTerrainPieces);
+        }
+        SetNextChunkPos(createBattleAlley);
 
         List<GameObject> teleporters = new List<GameObject>();
         GetAllTeleporters(thirdPocketMonster, teleporters, "LeaveTeleporter");
 
-        GameObject battleSpot = CreateBattleAlley(teleporters);
+        if (createBattleAlley)
+        {
+            GameObject battleSpot = CreateBattleAlley(teleporters, true);
+        }
 
         List<GameObject> arrivalTeleporters = new List<GameObject>();
         GetAllTeleporters(thirdPocketMonster, arrivalTeleporters, "LandingTeleporter");
@@ -254,13 +284,14 @@ public class TerrainManager : MonoBehaviour
 
         path = LandingTeleporter.SpawnPosition.Middle;
 
-        currentMapChunk = whatToSpawn;
+        currentMapChunk = MapChunksToSpawn.ThirdPocketMonster;
         whatToSpawn = MapChunksToSpawn.StartOfGauntlet;
 
         return landingTeleporters;
     }
 
-    private List<LandingTeleporter> CreateStartOfGauntlet(List<LandingTeleporter> landingTeleporters, LandingTeleporter.SpawnPosition direction)
+    private List<LandingTeleporter> CreateStartOfGauntlet(List<LandingTeleporter> landingTeleporters, 
+        LandingTeleporter.SpawnPosition direction, bool createBattleAlley)
     {
         ClearTerrainPieces(true);
         List<GameObject> teleporters = new List<GameObject>();
@@ -279,12 +310,15 @@ public class TerrainManager : MonoBehaviour
                 gauntletChunk = Instantiate(firstStop);
             }
 
-            SetGauntlerChunkPosAndSetTeleporters(gauntletChunk, teleporters, arrivalTeleporters, i);
+            SetGauntlerChunkPosAndSetTeleporters(gauntletChunk, teleporters, arrivalTeleporters, i, createBattleAlley);
         }
 
         gameManager.GoToNextPickUp();
 
-        GameObject battleSpot = CreateBattleAlley(teleporters);
+        if (createBattleAlley)
+        {
+            GameObject battleSpot = CreateBattleAlley(teleporters, true);
+        }
 
         for (int i = 0; i < arrivalTeleporters.Count; i++)
         {
@@ -307,7 +341,7 @@ public class TerrainManager : MonoBehaviour
 
         currentPlaceInGuantlet++;
 
-        currentMapChunk = whatToSpawn;
+        currentMapChunk = MapChunksToSpawn.StartOfGauntlet;
         if (currentLenght - 1 == currentPlaceInGuantlet)
         {
             whatToSpawn = MapChunksToSpawn.EndOfGuantlet;
@@ -320,7 +354,8 @@ public class TerrainManager : MonoBehaviour
         return landingTeleporters;
     }
 
-    private List<LandingTeleporter> CreateMidGuantlet(List<LandingTeleporter> landingTeleporters, LandingTeleporter.SpawnPosition direction)
+    private List<LandingTeleporter> CreateMidGuantlet(List<LandingTeleporter> landingTeleporters, 
+        LandingTeleporter.SpawnPosition direction, bool createBattleAlley)
     {
         ClearTerrainPieces(true);
         List<GameObject> teleporters = new List<GameObject>();
@@ -339,12 +374,15 @@ public class TerrainManager : MonoBehaviour
                 gauntletChunk = Instantiate(midwayStopOnSide);
             }
 
-            SetGauntlerChunkPosAndSetTeleporters(gauntletChunk, teleporters, arrivalTeleporters, i);
+            SetGauntlerChunkPosAndSetTeleporters(gauntletChunk, teleporters, arrivalTeleporters, i, createBattleAlley);
         }
 
         gameManager.GoToNextPickUp();
 
-        GameObject battleSpot = CreateBattleAlley(teleporters);
+        if (createBattleAlley)
+        {
+            GameObject battleSpot = CreateBattleAlley(teleporters, true);
+        }
 
         for (int i = 0; i < arrivalTeleporters.Count; i++)
         {
@@ -360,7 +398,7 @@ public class TerrainManager : MonoBehaviour
 
         currentPlaceInGuantlet++;
 
-        currentMapChunk = whatToSpawn;
+        currentMapChunk = MapChunksToSpawn.MidGauntlet;
         if (currentLenght - 1 == currentPlaceInGuantlet)
         {
             whatToSpawn = MapChunksToSpawn.EndOfGuantlet;
@@ -373,7 +411,8 @@ public class TerrainManager : MonoBehaviour
         return landingTeleporters;
     }
 
-    private List<LandingTeleporter> CreateEndGuantlet(List<LandingTeleporter> landingTeleporters, LandingTeleporter.SpawnPosition direction)
+    private List<LandingTeleporter> CreateEndGuantlet(List<LandingTeleporter> landingTeleporters, 
+        LandingTeleporter.SpawnPosition direction, bool createBattleAlley)
     {
         ClearTerrainPieces(true);
         List<GameObject> teleporters = new List<GameObject>();
@@ -392,12 +431,15 @@ public class TerrainManager : MonoBehaviour
                 gauntletChunk = Instantiate(endStopSmall);
             }
 
-            SetGauntlerChunkPosAndSetTeleporters(gauntletChunk, teleporters, arrivalTeleporters, i);
+            SetGauntlerChunkPosAndSetTeleporters(gauntletChunk, teleporters, arrivalTeleporters, i, createBattleAlley);
         }
 
         gameManager.GoToNextPickUp();
 
-        GameObject battleSpot = CreateBattleAlley(teleporters);
+        if (createBattleAlley)
+        {
+            GameObject battleSpot = CreateBattleAlley(teleporters, true);
+        }
 
         for (int i = 0; i < teleporters.Count; i++)
         {
@@ -428,7 +470,7 @@ public class TerrainManager : MonoBehaviour
         path = neededDirection;
         currentPlaceInGuantlet++;
 
-        currentMapChunk = whatToSpawn;
+        currentMapChunk = MapChunksToSpawn.EndOfGuantlet;
         if (currentLenght + 1 >= lengthOfRun)
         {
             whatToSpawn = MapChunksToSpawn.EndOfGame;
@@ -441,19 +483,26 @@ public class TerrainManager : MonoBehaviour
         return landingTeleporters;
     }
 
-    private List<LandingTeleporter> CreateBigItemRound(List<LandingTeleporter> landingTeleporters, LandingTeleporter.SpawnPosition direction)
+    private List<LandingTeleporter> CreateBigItemRound(List<LandingTeleporter> landingTeleporters, 
+        LandingTeleporter.SpawnPosition direction, bool createBattleAlley)
     {
         ClearTerrainPieces(true);
         GameObject bigItemRound = Instantiate(bigStop);
         bigItemRound.transform.position = nextChunkPos;
         currentTerrainPieces.Add(bigItemRound);
-        gameManager.ChooseMergantsToSpawn(whatToSpawn, false, nextChunkPos, currentLenght, currentTerrainPieces);
-        SetNextChunkPos();
+        if (createBattleAlley)
+        {
+            gameManager.ChooseMergantsToSpawn(whatToSpawn, false, nextChunkPos, currentLenght, currentTerrainPieces);
+        }
+        SetNextChunkPos(createBattleAlley);
 
         List<GameObject> teleporters = new List<GameObject>();
         GetAllTeleporters(bigItemRound, teleporters, "LeaveTeleporter");
 
-        GameObject battleSpot = CreateBattleAlley(teleporters);
+        if (createBattleAlley)
+        {
+            GameObject battleSpot = CreateBattleAlley(teleporters, true);
+        }
 
         List<GameObject> arrivalTeleporters = new List<GameObject>();
         GetAllTeleporters(bigItemRound, arrivalTeleporters, "LandingTeleporter");
@@ -465,7 +514,7 @@ public class TerrainManager : MonoBehaviour
 
         path = LandingTeleporter.SpawnPosition.Middle;
 
-        currentMapChunk = whatToSpawn;
+        currentMapChunk = MapChunksToSpawn.BigItemRound;
         whatToSpawn = MapChunksToSpawn.StartOfGauntlet;
 
         currentLenght++;
@@ -474,14 +523,18 @@ public class TerrainManager : MonoBehaviour
         return landingTeleporters;
     }
 
-    private List<LandingTeleporter> CreateEndOfGame(List<LandingTeleporter> landingTeleporters, LandingTeleporter.SpawnPosition direction)
+    private List<LandingTeleporter> CreateEndOfGame(List<LandingTeleporter> landingTeleporters, 
+        LandingTeleporter.SpawnPosition direction, bool createBattleAlley)
     {
         ClearTerrainPieces(true);
         GameObject lastItemRound = Instantiate(endStopMiddle);
         lastItemRound.transform.position = nextChunkPos;
         currentTerrainPieces.Add(lastItemRound);
-        gameManager.ChooseMergantsToSpawn(whatToSpawn, false, nextChunkPos, currentLenght, currentTerrainPieces);
-        SetNextChunkPos();
+        if (createBattleAlley)
+        {
+            gameManager.ChooseMergantsToSpawn(whatToSpawn, false, nextChunkPos, currentLenght, currentTerrainPieces);
+        }
+        SetNextChunkPos(createBattleAlley);
 
         List<GameObject> teleporters = new List<GameObject>();
         GetAllTeleporters(lastItemRound, teleporters, "LeaveTeleporter");
@@ -494,12 +547,15 @@ public class TerrainManager : MonoBehaviour
             landingTeleporters.Add(arrivalTeleporters[i].GetComponent<LandingTeleporter>());
         }
 
-        battleSpots.Add(lastItemRound);
+        currentTerrainPieces.Add(lastItemRound);
         ClearTerrainPieces(false);
         GameObject battleSpot = Instantiate(startSpawn);
         battleSpot.transform.position = nextChunkPos;
         currentTerrainPieces.Add(battleSpot);
-        gameManager.ChooseMergantsToSpawn(whatToSpawn, true, nextChunkPos, currentLenght,currentTerrainPieces);
+        if (createBattleAlley)
+        {
+            gameManager.ChooseMergantsToSpawn(whatToSpawn, false, nextChunkPos, currentLenght, currentTerrainPieces);
+        }
         battleSpot.transform.eulerAngles = new Vector3(0, 180, 0);
         List<GameObject> battleTeleporters = new List<GameObject>();
         GetAllTeleporters(battleSpot, battleTeleporters, "LeaveTeleporter");
@@ -515,18 +571,22 @@ public class TerrainManager : MonoBehaviour
         }
 
         path = LandingTeleporter.SpawnPosition.Middle;
-        currentMapChunk = whatToSpawn;
+        currentMapChunk = MapChunksToSpawn.EndOfGame;
         whatToSpawn = MapChunksToSpawn.LastBattle;
 
         return landingTeleporters;
     }
 
-    private void SetGauntlerChunkPosAndSetTeleporters(GameObject gauntletChunk, List<GameObject> teleporters, List<GameObject> arrivalTeleporters, int index)
+    private void SetGauntlerChunkPosAndSetTeleporters(GameObject gauntletChunk, List<GameObject> teleporters, 
+        List<GameObject> arrivalTeleporters, int index, bool createBattleAlley)
     {
         gauntletChunk.transform.position = nextChunkPos;
         currentTerrainPieces.Add(gauntletChunk);
-        gameManager.ChooseMergantsToSpawn(whatToSpawn, false, nextChunkPos, currentLenght, currentTerrainPieces);
-        SetNextChunkPos();
+        if (createBattleAlley)
+        {
+            gameManager.ChooseMergantsToSpawn(whatToSpawn, false, nextChunkPos, currentLenght, currentTerrainPieces);
+        }
+        SetNextChunkPos(createBattleAlley);
 
         GetAllTeleporters(gauntletChunk, teleporters, "LeaveTeleporter");
         GetAllTeleporters(gauntletChunk, arrivalTeleporters, "LandingTeleporter");
@@ -539,12 +599,15 @@ public class TerrainManager : MonoBehaviour
         }
     }
 
-    private GameObject CreateBattleAlley(List<GameObject> teleporters)
+    private GameObject CreateBattleAlley(List<GameObject> teleporters, bool createTrainer)
     {
         GameObject battleSpot = Instantiate(battleAlley);
         battleSpot.transform.position = nextChunkPos;
-        gameManager.ChooseMergantsToSpawn(whatToSpawn, true, nextChunkPos, currentLenght, currentTerrainPieces);
-        SetNextChunkPos();
+        if (createTrainer)
+        {
+            gameManager.ChooseMergantsToSpawn(whatToSpawn, true, nextChunkPos, currentLenght, currentTerrainPieces);
+        }
+        SetNextChunkPos(createTrainer);
         List<GameObject> teleporterOfAlley = new List<GameObject>();
         GetAllTeleporters(battleSpot, teleporterOfAlley, "LandingTeleporter");
 
@@ -741,10 +804,13 @@ public class TerrainManager : MonoBehaviour
         return neededPos;
     }
 
-    private void SetNextChunkPos()
+    private void SetNextChunkPos(bool editPos)
     {
-        nextChunkPos.x += 50;
-        nextChunkPos.z += 50;
+        if (editPos)
+        {
+            nextChunkPos.x += 50;
+            nextChunkPos.z += 50;
+        }
     }
 
     private void GetAllTeleporters(GameObject landPiece, List<GameObject> teleporters, string tag)
@@ -759,6 +825,102 @@ public class TerrainManager : MonoBehaviour
             if (child.childCount > 0)
             {
                 GetAllTeleporters(child.gameObject, teleporters, tag);
+            }
+        }
+    }
+
+    public void LoadSavedStats(PlayerData data)
+    {
+        lengthOfRun = data.lengthOfRun;
+        currentLenght = data.currentLenght;
+        currentPlaceInGuantlet = data.currentPlaceInGuantlet;
+        currentMapChunk = (MapChunksToSpawn)System.Enum.Parse(typeof(MapChunksToSpawn), data.currentMapChunk);
+        whatToSpawn = (MapChunksToSpawn)System.Enum.Parse(typeof(MapChunksToSpawn), data.whatToSpawn);
+        path = (LandingTeleporter.SpawnPosition)System.Enum.Parse(typeof(LandingTeleporter.SpawnPosition), data.path);
+
+        nextChunkPos.x = data.nextChunkPos[0];
+        nextChunkPos.y = data.nextChunkPos[1];
+        nextChunkPos.z = data.nextChunkPos[2];
+
+        List<LandingTeleporter> landingTeleporters = new List<LandingTeleporter>();
+
+        print(currentMapChunk);
+        switch (currentMapChunk)
+        {
+            case MapChunksToSpawn.StartOfMap:
+                SpawnStartOfMap(false);
+                break;
+            case MapChunksToSpawn.SecondPocketMonster:
+                landingTeleporters = CreateFirstStop(landingTeleporters, path, false);
+                break;
+            case MapChunksToSpawn.FirstMoveSelection:
+                landingTeleporters = CreateFirstMoveSelection(landingTeleporters, path, false);
+                break;
+            case MapChunksToSpawn.SecondMoveSelection:
+                landingTeleporters = CreateSecondMoveSelection(landingTeleporters, path, false);
+                break;
+            case MapChunksToSpawn.ThirdPocketMonster:
+                landingTeleporters = CreateThirdPocketMonsterSelection(landingTeleporters, path, false);
+                break;
+            case MapChunksToSpawn.StartOfGauntlet:
+                landingTeleporters = CreateStartOfGauntlet(landingTeleporters, path, false);
+                break;
+            case MapChunksToSpawn.MidGauntlet:
+                landingTeleporters = CreateMidGuantlet(landingTeleporters, path, false);
+                break;
+            case MapChunksToSpawn.EndOfGuantlet:
+                landingTeleporters = CreateEndGuantlet(landingTeleporters, path, false);
+                break;
+            case MapChunksToSpawn.BigItemRound:
+                landingTeleporters = CreateBigItemRound(landingTeleporters, path, false);
+                break;
+            case MapChunksToSpawn.EndOfGame:
+                landingTeleporters = CreateEndOfGame(landingTeleporters, path, false);
+                break;
+            default:
+                print("No map pieces found to spawn");
+                break;
+        }
+
+        List<GameObject> teleporters = new List<GameObject>();
+
+        for (int i = 0; i < currentTerrainPieces.Count; i++)
+        {
+            Vector3 pos = Vector3.zero;
+            pos.x = data.currentTerrainPiecesPosses[i][0];
+            pos.y = data.currentTerrainPiecesPosses[i][1];
+            pos.z = data.currentTerrainPiecesPosses[i][2];
+            currentTerrainPieces[i].transform.position = pos;
+
+            GetAllTeleporters(currentTerrainPieces[i], teleporters, "LeaveTeleporter");
+        }
+
+        for (int i = 0; i < data.battleSpotsPosses.Count; i++)
+        {
+            GameObject battleSpot = CreateBattleAlley(teleporters, false);
+
+            Vector3 pos = Vector3.zero;
+            pos.x = data.battleSpotsPosses[i][0];
+            pos.y = data.battleSpotsPosses[i][1];
+            pos.z = data.battleSpotsPosses[i][2];
+            battleSpot.transform.position = pos;
+
+            if (i == data.battleSpotsPosses.Count - 2 && currentMapChunk != MapChunksToSpawn.EndOfGame ||
+                i == data.battleSpotsPosses.Count - 1 && currentMapChunk == MapChunksToSpawn.EndOfGame)
+            {
+                List<GameObject> battleLandingTeleporter = new List<GameObject>();
+                GetAllTeleporters(battleSpot, battleLandingTeleporter, "LandingTeleporter");
+
+                LandingTeleporter.SpawnPosition spawnPosition = (LandingTeleporter.SpawnPosition)System.Enum.Parse(typeof
+                    (LandingTeleporter.SpawnPosition), data.teleporterSpawnPos);
+                for (int j = 0; j < landingTeleporters.Count; j++)
+                {
+                    if (landingTeleporters[j].spawnPosition == spawnPosition)
+                    {
+                        battleLandingTeleporter[0].GetComponent<BattleLandingTeleporter>().connectedTeleporter.connectedSpawnPlace =
+                            landingTeleporters[j].gameObject.transform;
+                    }
+                }
             }
         }
     }

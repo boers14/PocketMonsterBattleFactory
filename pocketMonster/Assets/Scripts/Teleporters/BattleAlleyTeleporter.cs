@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class BattleAlleyTeleporter : LandingTeleporter
 {
-    public Transform connectedSpawnPlace = null;
+    public Transform connectedSpawnPlace { get; set; } = null;
 
     private void OnCollisionEnter(Collision collision)
     {

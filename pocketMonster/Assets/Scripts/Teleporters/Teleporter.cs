@@ -16,7 +16,7 @@ public class Teleporter : LandingTeleporter
         {
             if (setData)
             {
-                connectedSpawnPlace.GetComponent<BattleLandingTeleporter>().SetTeleporterData(this);
+                connectedSpawnPlace.GetComponent<BattleLandingTeleporter>().SetTeleporterData(spawnPosition);
             }
             Vector3 teleportedPos = connectedSpawnPlace.position;
             teleportedPos.y += 1;
