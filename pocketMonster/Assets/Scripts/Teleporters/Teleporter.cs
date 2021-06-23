@@ -14,10 +14,13 @@ public class Teleporter : LandingTeleporter
     {
         if (collision.collider.tag == "Player" && teleport && gameManager.playerPocketMonsters.Count > 0)
         {
+            gameManager.ClearMergants();
+
             if (setData)
             {
                 connectedSpawnPlace.GetComponent<BattleLandingTeleporter>().SetTeleporterData(spawnPosition);
             }
+
             Vector3 teleportedPos = connectedSpawnPlace.position;
             teleportedPos.y += 1;
             collision.gameObject.transform.position = teleportedPos;

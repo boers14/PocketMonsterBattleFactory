@@ -143,7 +143,7 @@ public class GameManager : MonoBehaviour
 
             RecoverMoves(data.allMovesHandedOut, allMovesHandedOut);
             RecoverItems(data.itemsToHandOut, itemsToHandOut, allPocketMonsterItems);
-            RecoverMoves(data.movesToHandOut, movesToHandOut);
+            RecoverMoves(data.movesToHandOut, movesToHandOut, true);
             RecoverItems(data.currentItemsHandedOut, currentItemsHandedOut, allPocketMonsterItems);
             RecoverMoves(data.currentMovesHandedOut, currentMovesHandedOut);
 
@@ -323,20 +323,25 @@ public class GameManager : MonoBehaviour
             {
                 case TerrainManager.MapChunksToSpawn.StartOfMap:
                     GeneratePocketMonsterMergant(pos, currentTerrainPieces);
+                    currentMergant = CurrentMergant.PocketMonster;
                     break;
                 case TerrainManager.MapChunksToSpawn.SecondPocketMonster:
                     FillMoveList(2, 2);
                     GeneratePocketMonsterMergant(pos, currentTerrainPieces);
+                    currentMergant = CurrentMergant.PocketMonster;
                     break;
                 case TerrainManager.MapChunksToSpawn.FirstMoveSelection:
                     GenerateMoveMergant(pos, currentTerrainPieces);
+                    currentMergant = CurrentMergant.Move;
                     break;
                 case TerrainManager.MapChunksToSpawn.SecondMoveSelection:
                     FillMoveList(lenghtOfGauntlet, 3);
                     GenerateMoveMergant(pos, currentTerrainPieces);
+                    currentMergant = CurrentMergant.Move;
                     break;
                 case TerrainManager.MapChunksToSpawn.ThirdPocketMonster:
                     GeneratePocketMonsterMergant(pos, currentTerrainPieces);
+                    currentMergant = CurrentMergant.PocketMonster;
                     break;
                 case TerrainManager.MapChunksToSpawn.StartOfGauntlet:
                     GenerateItemOrMoveMergant(pos, currentTerrainPieces);
@@ -1152,7 +1157,11 @@ public class GameManager : MonoBehaviour
     {
         player.GetComponent<PlayerMovement>().enabled = true;
         ClearButtons();
+        ClearMergants();
+    }
 
+    public void ClearMergants()
+    {
         for (int i = 0; i < mergants.Count; i++)
         {
             Destroy(mergants[i].gameObject);
@@ -1718,7 +1727,7 @@ public class GameManager : MonoBehaviour
         TranslateItemsToInt(teamBuffsOfPlayerInInt, teamBuffsOfPlayer, allTeamBuffs);
         TranslateMovesToInt(allMovesHandedOutInInt, allMovesHandedOut);
         TranslateItemsToInt(itemsToHandOutInInt, itemsToHandOut, allPocketMonsterItems);
-        TranslateMovesToInt(movesToHandOutInInt, movesToHandOut);
+        TranslateMovesToInt(movesToHandOutInInt, movesToHandOut, true);
         TranslateItemsToInt(currentItemsHandedOutInInt, currentItemsHandedOut, allPocketMonsterItems);
         TranslateMovesToInt(currentMovesHandedOutInInt, currentMovesHandedOut);
         SaveSytem.SaveGame(playerBattle.gameObject, this, managerOfEnemys, managerOfTheTerrains);
@@ -1731,34 +1740,30 @@ public class GameManager : MonoBehaviour
         {
             for (int j = 0; j < itemListToSearchThrough.Count; j++)
             {
-                int sameTypeValue = 0;
                 if (actualItemList[i].GetType() == itemListToSearchThrough[j].GetType())
                 {
-                    sameTypeValue = j;
+                    intItemList.Add(j);
                 }
-                intItemList.Add(sameTypeValue);
             }
         }
     }
 
-    private void TranslateMovesToInt(List<int> intMovesList, List<PocketMonsterMoves> actualMovesList)
+    private void TranslateMovesToInt(List<int> intMovesList, List<PocketMonsterMoves> actualMovesList, bool printList = false)
     {
         intMovesList.Clear();
         for (int i = 0; i < actualMovesList.Count; i++)
         {
             for (int j = 0; j < allPocketMonstersMoves.Count; j++)
             {
-                int sameTypeValue = 0;
                 if (actualMovesList[i].GetType() == allPocketMonstersMoves[j].GetType())
                 {
-                    sameTypeValue = j;
+                    intMovesList.Add(j);
                 }
-                intMovesList.Add(sameTypeValue);
             }
         }
     }
 
-    private void RecoverMoves(List<int> data, List<PocketMonsterMoves> movesToRecover)
+    private void RecoverMoves(List<int> data, List<PocketMonsterMoves> movesToRecover, bool printList = false)
     {
         movesToRecover.Clear();
         for (int i = 0; i < data.Count; i++)

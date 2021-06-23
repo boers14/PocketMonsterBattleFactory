@@ -128,7 +128,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   walkSpeed: 10
-  rotationSpeed: 2
+  rotationSpeed: 1.5
   gravity: 0.5
   sprintSpeed: 15
 --- !u!114 &-8015359346494681308
@@ -161,6 +161,7 @@ MonoBehaviour:
   isInAbilityMenu: 0
   lastPocketmonsterFainted: 0
   healNextPocketMonster: 0
+  isInBattle: 0
   disFromPlayer: 3
   chemicalSprite: {fileID: 21300000, guid: 82970653165da264383bb4b2c8e7ee72, type: 3}
   staticSprite: {fileID: 21300000, guid: 3802067969d65144883e01c32d9a7f28, type: 3}

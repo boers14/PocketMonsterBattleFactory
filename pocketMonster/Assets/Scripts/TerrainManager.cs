@@ -844,7 +844,6 @@ public class TerrainManager : MonoBehaviour
 
         List<LandingTeleporter> landingTeleporters = new List<LandingTeleporter>();
 
-        print(currentMapChunk);
         switch (currentMapChunk)
         {
             case MapChunksToSpawn.StartOfMap:
