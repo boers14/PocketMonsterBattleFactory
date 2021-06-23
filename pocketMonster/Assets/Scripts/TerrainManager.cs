@@ -483,7 +483,7 @@ public class TerrainManager : MonoBehaviour
         return landingTeleporters;
     }
 
-    private List<LandingTeleporter> CreateBigItemRound(List<LandingTeleporter> landingTeleporters, 
+    private List<LandingTeleporter> CreateBigItemRound(List<LandingTeleporter> landingTeleporters,
         LandingTeleporter.SpawnPosition direction, bool createBattleAlley)
     {
         ClearTerrainPieces(true);
@@ -517,7 +517,10 @@ public class TerrainManager : MonoBehaviour
         currentMapChunk = MapChunksToSpawn.BigItemRound;
         whatToSpawn = MapChunksToSpawn.StartOfGauntlet;
 
-        currentLenght++;
+        if (createBattleAlley)
+        {
+            currentLenght++;
+        }
         currentPlaceInGuantlet = 0;
 
         return landingTeleporters;
