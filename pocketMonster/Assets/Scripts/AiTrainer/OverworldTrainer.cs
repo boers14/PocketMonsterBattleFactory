@@ -82,6 +82,7 @@ public class OverworldTrainer : MonoBehaviour
 
             if (gameManager.lastBattle && playerWon)
             {
+                SaveSytem.DeleteGame();
                 gameManager.SwitchToStartScreen();
             }
 

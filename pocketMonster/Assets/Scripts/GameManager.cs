@@ -95,8 +95,7 @@ public class GameManager : MonoBehaviour
 
     private PlayerBattle playerBattle;
 
-    [SerializeField]
-    private Material teamBuffMaterial = null, finalBattleMaterial = null, pocketMonsterMaterial = null, itemMaterial = null, moveMaterial = null;
+    public Material teamBuffMaterial = null, finalBattleMaterial = null, pocketMonsterMaterial = null, itemMaterial = null, moveMaterial = null;
 
     public List<int> playerPocketMonsterInInt = new List<int>(), playerPocketMonstersAbilityInInt = new List<int>(), teamBuffsOfPlayerInInt = new List<int>(),
         allMovesHandedOutInInt = new List<int>(), itemsToHandOutInInt = new List<int>(), movesToHandOutInInt = new List<int>(),
@@ -138,12 +137,12 @@ public class GameManager : MonoBehaviour
             GameObject textMessagerInBattle = Instantiate(inBattleTextManager);
             battleTextManager = textMessagerInBattle.GetComponent<InBattleTextManager>();
 
-            managerOfTerrain.GetComponent<TerrainManager>().SetGameManger(this);
-            managerOfTerrain.GetComponent<TerrainManager>().LoadSavedStats(data);
+            managerOfTheTerrains.SetGameManger(this);
+            managerOfTheTerrains.LoadSavedStats(data);
 
             RecoverMoves(data.allMovesHandedOut, allMovesHandedOut);
             RecoverItems(data.itemsToHandOut, itemsToHandOut, allPocketMonsterItems);
-            RecoverMoves(data.movesToHandOut, movesToHandOut, true);
+            RecoverMoves(data.movesToHandOut, movesToHandOut);
             RecoverItems(data.currentItemsHandedOut, currentItemsHandedOut, allPocketMonsterItems);
             RecoverMoves(data.currentMovesHandedOut, currentMovesHandedOut);
 
@@ -166,7 +165,7 @@ public class GameManager : MonoBehaviour
                         GeneratePocketMonsterMergant(mergantPos, managerOfTheTerrains.currentTerrainPieces);
                         break;
                     case CurrentMergant.TeamBuff:
-                        GenerateTeamBuffMergant(mergantPos, managerOfTheTerrains.currentTerrainPieces);
+                        GenerateTeamBuffMergant(mergantPos, managerOfTheTerrains.currentTerrainPieces, false);
                         break;
                     case CurrentMergant.Item:
                         GameObject itemMergant = Instantiate(itemGiver);
@@ -196,6 +195,11 @@ public class GameManager : MonoBehaviour
                 GenerateTrainer(trainerPos);
             }
 
+            if (managerOfTheTerrains.currentMapChunk == TerrainManager.MapChunksToSpawn.EndOfGame)
+            {
+                ColorGroundTerrainPieces(managerOfTheTerrains.currentTerrainPieces, finalBattleMaterial);
+            }
+
             GameObject go = Instantiate(playerObject);
             Vector3 playerPos = Vector3.zero;
             playerPos.x = data.playerPos[0];
@@ -205,7 +209,6 @@ public class GameManager : MonoBehaviour
             go.GetComponent<PlayerPocketMonsterMenu>().SetGameManager(this);
             go.GetComponent<CheckGauntletMap>().SetGameManager(this);
             go.GetComponent<CheckGauntletMap>().SetTerrainManager(managerOfTerrain.GetComponent<TerrainManager>());
-            go.GetComponent<CheckGauntletMap>().SetStartLengthOfRun(managerOfTerrain.GetComponent<TerrainManager>().currentLenght);
             go.GetComponent<PlayerBattle>().SetInBattleTextManager(textMessagerInBattle.GetComponent<InBattleTextManager>());
             playerBattle = go.GetComponent<PlayerBattle>();
 
@@ -278,7 +281,6 @@ public class GameManager : MonoBehaviour
             go.GetComponent<PlayerPocketMonsterMenu>().SetGameManager(this);
             go.GetComponent<CheckGauntletMap>().SetGameManager(this);
             go.GetComponent<CheckGauntletMap>().SetTerrainManager(managerOfTerrain.GetComponent<TerrainManager>());
-            go.GetComponent<CheckGauntletMap>().SetStartLengthOfRun(managerOfTerrain.GetComponent<TerrainManager>().currentLenght);
             go.GetComponent<PlayerBattle>().SetInBattleTextManager(textMessagerInBattle.GetComponent<InBattleTextManager>());
             playerBattle = go.GetComponent<PlayerBattle>();
 
@@ -306,19 +308,15 @@ public class GameManager : MonoBehaviour
     public void ChooseMergantsToSpawn(TerrainManager.MapChunksToSpawn whatIsSpawned, bool trainer, Vector3 pos, int lenghtOfGauntlet, 
         List<GameObject> currentTerrainPieces)
     {
-
         if (trainer)
         {
             GenerateTrainer(pos);
-            if (whatIsSpawned == TerrainManager.MapChunksToSpawn.EndOfGame)
+            if (whatIsSpawned == TerrainManager.MapChunksToSpawn.EndOfGame || whatIsSpawned == TerrainManager.MapChunksToSpawn.LastBattle)
             {
                 ColorGroundTerrainPieces(currentTerrainPieces, finalBattleMaterial);
             }
         } else
         {
-            currentItemsHandedOut.Clear();
-            currentMovesHandedOut.Clear();
-
             switch (whatIsSpawned)
             {
                 case TerrainManager.MapChunksToSpawn.StartOfMap:
@@ -373,7 +371,7 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            GenerateTeamBuffMergant(pos, currentTerrainPieces);
+            GenerateTeamBuffMergant(pos, currentTerrainPieces, true);
             nextBigPickUp = BigPickups.PocketMonster;
             currentMergant = CurrentMergant.TeamBuff;
         }
@@ -426,9 +424,9 @@ public class GameManager : MonoBehaviour
         ColorGroundTerrainPieces(currentTerrainPieces, itemMaterial);
     }
 
-    private void GenerateTeamBuffMergant(Vector3 pos, List<GameObject> currentTerrainPieces)
+    private void GenerateTeamBuffMergant(Vector3 pos, List<GameObject> currentTerrainPieces, bool addTeamBuffsToEnemy)
     {
-        if (managerOfEnemys.amountOfTeamBuffs < 3)
+        if (managerOfEnemys.amountOfTeamBuffs < 3 && addTeamBuffsToEnemy)
         {
             managerOfEnemys.amountOfTeamBuffs++;
         }
@@ -1167,6 +1165,8 @@ public class GameManager : MonoBehaviour
             Destroy(mergants[i].gameObject);
         }
 
+        currentItemsHandedOut.Clear();
+        currentMovesHandedOut.Clear();
         mergants.Clear();
     }
 
@@ -1727,7 +1727,7 @@ public class GameManager : MonoBehaviour
         TranslateItemsToInt(teamBuffsOfPlayerInInt, teamBuffsOfPlayer, allTeamBuffs);
         TranslateMovesToInt(allMovesHandedOutInInt, allMovesHandedOut);
         TranslateItemsToInt(itemsToHandOutInInt, itemsToHandOut, allPocketMonsterItems);
-        TranslateMovesToInt(movesToHandOutInInt, movesToHandOut, true);
+        TranslateMovesToInt(movesToHandOutInInt, movesToHandOut);
         TranslateItemsToInt(currentItemsHandedOutInInt, currentItemsHandedOut, allPocketMonsterItems);
         TranslateMovesToInt(currentMovesHandedOutInInt, currentMovesHandedOut);
         SaveSytem.SaveGame(playerBattle.gameObject, this, managerOfEnemys, managerOfTheTerrains);
@@ -1748,7 +1748,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private void TranslateMovesToInt(List<int> intMovesList, List<PocketMonsterMoves> actualMovesList, bool printList = false)
+    private void TranslateMovesToInt(List<int> intMovesList, List<PocketMonsterMoves> actualMovesList)
     {
         intMovesList.Clear();
         for (int i = 0; i < actualMovesList.Count; i++)
@@ -1763,7 +1763,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private void RecoverMoves(List<int> data, List<PocketMonsterMoves> movesToRecover, bool printList = false)
+    private void RecoverMoves(List<int> data, List<PocketMonsterMoves> movesToRecover)
     {
         movesToRecover.Clear();
         for (int i = 0; i < data.Count; i++)

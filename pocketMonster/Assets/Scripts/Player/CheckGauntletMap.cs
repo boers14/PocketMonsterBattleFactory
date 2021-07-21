@@ -27,7 +27,7 @@ public class CheckGauntletMap : MonoBehaviour
 
     private Vector3 prevMousePos = Vector3.zero;
 
-    private int startLenghtOfRun = 0;
+    private int startLenghtOfRun = 2;
     private float scrollPoints = 0;
 
     bool mapIsActive = false;
@@ -385,13 +385,7 @@ public class CheckGauntletMap : MonoBehaviour
             CreateInformation(info, canvas, i);
             if (i == 0)
             {
-                if (terrainManager.currentLenght == 3)
-                {
-                    info.text = "Pocketmonster";
-                    icon.sprite = pocketMonsterSprite;
-                    icon.color = pocketMonsterColor;
-                    info.GetComponent<HoverableUiElement>().SetText(pocketMonsterText);
-                } else if (gameManager.nextBigPickUp == GameManager.BigPickups.PocketMonster)
+                if (gameManager.nextBigPickUp == GameManager.BigPickups.PocketMonster)
                 {
                     info.text = "Teambuff";
                     icon.sprite = teamBuffSprite;
@@ -868,10 +862,5 @@ public class CheckGauntletMap : MonoBehaviour
     public void SetTerrainManager(TerrainManager terrainManager)
     {
         this.terrainManager = terrainManager;
-    }
-
-    public void SetStartLengthOfRun(int startLenghtOfRun)
-    {
-        this.startLenghtOfRun = startLenghtOfRun;
     }
 }

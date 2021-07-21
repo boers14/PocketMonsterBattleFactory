@@ -33,7 +33,11 @@ public class PlayerCam : MonoBehaviour
 
         for (int i = allObjectsInFrontOfCam.Count - 1; i >= 0; i--)
         {
-            allObjectsInFrontOfCam[i].GetComponent<Renderer>().shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.On;
+            if (allObjectsInFrontOfCam[i] != null)
+            {
+                allObjectsInFrontOfCam[i].GetComponent<Renderer>().shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.On;
+            }
+
             allObjectsInFrontOfCam.RemoveAt(i);
         }
 

@@ -1,10 +1,17 @@
-save system (deleting files, loading/ saving)
 use attacking move with last breath (particles)
 status effects on switch in (spreading plague)
+stats dont reset when airborne status switches
+(jetpack with speed injection)
+On switch in text messages should be after ability usage
+move battle alley teleporter a bit down
+speedswap with paralazys didnt half speed on first turn?
+batle alley teleporters after saving
 end celebration (end screen with particle effects)
+on new gauntlet move map back to start
 particles for winning/ losing battle
 Exit game button
 visual for saving
 cant save when game is finished
+
 
 music making day with bruno?
