@@ -128,23 +128,23 @@ public class InBattleTextManager : MonoBehaviour
         {
             if (damageDone > 0)
             {
-                player.QuePocketMonsterTextUpdate(player.currentPocketMonster.health, setParticleEffects, true);
+                player.QuePocketMonsterTextUpdate(player.currentPocketMonster.health, setParticleEffects, true, move);
             } else
             {
-                player.QuePocketMonsterTextUpdate(player.currentPocketMonster.health, false, false);
+                player.QuePocketMonsterTextUpdate(player.currentPocketMonster.health, false, false, move);
             }
-            player.QueOpponentPocketMonsterUpdate(player.opponentPocketMonster.health, false, false);
+            player.QueOpponentPocketMonsterUpdate(player.opponentPocketMonster.health, false, false, move);
         } else
         {
             if (damageDone > 0)
             {
-                player.QueOpponentPocketMonsterUpdate(player.opponentPocketMonster.health, setParticleEffects, true);
+                player.QueOpponentPocketMonsterUpdate(player.opponentPocketMonster.health, setParticleEffects, true, move);
             }
             else
             {
-                player.QueOpponentPocketMonsterUpdate(player.opponentPocketMonster.health, false, false);
+                player.QueOpponentPocketMonsterUpdate(player.opponentPocketMonster.health, false, false, move);
             }
-            player.QuePocketMonsterTextUpdate(player.currentPocketMonster.health, false, false);
+            player.QuePocketMonsterTextUpdate(player.currentPocketMonster.health, false, false, move);
         }
 
     }
@@ -152,32 +152,33 @@ public class InBattleTextManager : MonoBehaviour
     public void QueMessage(string message, bool colorOpponentHealth, bool colorPlayerHealth, bool playerRed, bool opponentRed)
     {
         setParticleEffects = false;
-        player.QuePocketMonsterTextUpdate(player.currentPocketMonster.health, setParticleEffects, colorPlayerHealth, playerRed);
-        player.QueOpponentPocketMonsterUpdate(player.opponentPocketMonster.health, setParticleEffects, colorOpponentHealth, opponentRed);
+        player.QuePocketMonsterTextUpdate(player.currentPocketMonster.health, setParticleEffects, colorPlayerHealth, null, playerRed);
+        player.QueOpponentPocketMonsterUpdate(player.opponentPocketMonster.health, setParticleEffects, colorOpponentHealth, null, opponentRed);
 
         dialogueLines.Add(message);
     }
 
     public void AddPlayerUpdate(PocketMonster pocketMonster, PocketMonster.StatusEffects status, string health, string player, bool battleConditions, 
-        bool colorText, bool red, bool particles)
+        bool colorText, bool red, bool particles, PocketMonsterMoves move)
     {
         PocketMonsterTextUpdate pocketMonsterTextUpdate = new PocketMonsterTextUpdate();
         pocketMonsterTextUpdate = SetPocketMonsterTextUpdate(pocketMonsterTextUpdate, pocketMonster, status, health, player, battleConditions, colorText, 
-            red, particles);
+            red, particles, move);
         playerInformations.Add(pocketMonsterTextUpdate);
     }
 
     public void AddAiupdate(PocketMonster pocketMonster, PocketMonster.StatusEffects status, string health, string player, bool battleConditions,
-        bool colorText, bool red, bool particles)
+        bool colorText, bool red, bool particles,PocketMonsterMoves move)
     {
         PocketMonsterTextUpdate pocketMonsterTextUpdate = new PocketMonsterTextUpdate();
         pocketMonsterTextUpdate = SetPocketMonsterTextUpdate(pocketMonsterTextUpdate, pocketMonster, status, health, player, battleConditions, colorText,
-            red, particles);
+            red, particles, move);
         aiInformations.Add(pocketMonsterTextUpdate);
     }
 
     private PocketMonsterTextUpdate SetPocketMonsterTextUpdate(PocketMonsterTextUpdate pocketMonsterTextUpdate, PocketMonster pocketMonster, 
-        PocketMonster.StatusEffects status, string health, string player, bool battleConditions, bool colorText, bool red, bool particles)
+        PocketMonster.StatusEffects status, string health, string player, bool battleConditions, bool colorText, bool red, bool particles, 
+        PocketMonsterMoves move)
     {
         pocketMonsterTextUpdate.pocketMonster = pocketMonster;
         pocketMonsterTextUpdate.player = player;
@@ -187,6 +188,7 @@ public class InBattleTextManager : MonoBehaviour
         pocketMonsterTextUpdate.colorText = colorText;
         pocketMonsterTextUpdate.red = red;
         pocketMonsterTextUpdate.showParticles = particles;
+        pocketMonsterTextUpdate.pocketMonsterMove = move;
 
         return pocketMonsterTextUpdate;
     }

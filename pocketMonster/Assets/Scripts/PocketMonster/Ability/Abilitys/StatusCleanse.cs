@@ -35,7 +35,6 @@ public class StatusCleanse : PocketMonsterAbility
             } else
             {
                 teamToCleanse[i].currentStatus = PocketMonster.StatusEffects.None;
-                teamToCleanse[i].RecalculateStatsAfterStatus();
             }
         }
 

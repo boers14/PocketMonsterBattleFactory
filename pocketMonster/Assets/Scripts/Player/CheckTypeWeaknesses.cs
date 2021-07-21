@@ -424,10 +424,10 @@ public class CheckTypeWeaknesses : MonoBehaviour
                     switch (status)
                     {
                         case PocketMonster.StatusEffects.Burned:
-                            text = "Halves the attack stat and deal 5% of max health as damage at the end of each turn.";
+                            text = "Halves damage dealt by physical attacks and deal 5% of max health as damage at the end of each turn.";
                             break;
                         case PocketMonster.StatusEffects.Bloated:
-                            text = "Halves the special attack stat and deal 5% of max health as damage at the end of each turn.";
+                            text = "Halves damage dealt by special attacks and deal 5% of max health as damage at the end of each turn.";
                             break;
                         case PocketMonster.StatusEffects.Nearsighted:
                             text = "Decreases the accuracy of all moves by 15%.";
@@ -436,7 +436,7 @@ public class CheckTypeWeaknesses : MonoBehaviour
                             text = "The pocketmonster can't switch out and deal 5% of max health as damage at the end of each turn.";
                             break;
                         case PocketMonster.StatusEffects.Airborne:
-                            text = "Halves the the defense and special defense of the pocketmonster.";
+                            text = "Take double damage from attacks of opponent pocketmonster.";
                             break;
                         case PocketMonster.StatusEffects.Poisened:
                             text = "Deal 15% of max health as damage at the end of each turn.";
@@ -448,7 +448,7 @@ public class CheckTypeWeaknesses : MonoBehaviour
                             text = "Moves cost 3 power points and deal 5% of max health as damage at the end of each turn.";
                             break;
                         case PocketMonster.StatusEffects.Paralyzed:
-                            text = "Halves the speed stat.";
+                            text = "At end of turn quarters the speed stat.";
                             break;
                         case PocketMonster.StatusEffects.None:
                             break;

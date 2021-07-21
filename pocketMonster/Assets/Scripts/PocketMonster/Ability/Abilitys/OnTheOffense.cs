@@ -17,7 +17,6 @@ public class OnTheOffense : PocketMonsterAbility
     public override void UseInstantAbility(PocketMonster ownPocketMonster, PocketMonster opponentPocketMonster, InBattleTextManager inBattleTextManager)
     {
         ownPocketMonster.currentStatus = PocketMonster.StatusEffects.Airborne;
-        ownPocketMonster.RecalculateStatsAfterStatus();
         ownPocketMonster.stats.attack.GetStatChanges(2);
         ownPocketMonster.stats.specialAttack.GetStatChanges(2);
         inBattleTextManager.QueMessage(ownPocketMonster.stats.name + " increased its attack and special attack by two stages, but became airborne.", 

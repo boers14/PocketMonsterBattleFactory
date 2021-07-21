@@ -15,7 +15,6 @@ public class Accelerator : PocketMonsterItem
     public override void GrantOnSwitchInEffect(PocketMonster effectedPocketMonster, PocketMonster opponentPocketMonster, InBattleTextManager inBattleTextManager, PlayerBattle player)
     {
         effectedPocketMonster.stats.speed.GetStatChanges(1);
-        effectedPocketMonster.RecalculateStatsAfterStatus();
         base.GrantOnSwitchInEffect(effectedPocketMonster, opponentPocketMonster, inBattleTextManager, player);
     }
 

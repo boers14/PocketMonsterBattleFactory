@@ -10,7 +10,7 @@ public class ThickArmor : PocketMonsterAbility
         oneTime = true;
         instantEffect = true;
         defenseAbility = true;
-        abilityDescription = "If an attack would do 50 or less damage to this pocketmonster it deals no damage instead. " +
+        abilityDescription = "If an attack would do 65 or less damage to this pocketmonster it deals no damage instead. " +
             "This effects last till the pocketmonster switches out. One time use.";
         base.SetAbilityStats(player);
     }
@@ -27,7 +27,7 @@ public class ThickArmor : PocketMonsterAbility
 
         if (ownPocketMonster.amountOfDamageTaken > 0)
         {
-            if (ownPocketMonster.amountOfDamageTaken <= 50)
+            if (ownPocketMonster.amountOfDamageTaken <= 65)
             {
                 ownPocketMonster.amountOfDamageTaken = 0;
                 inBattleTextManager.QueMessage(ownPocketMonster.stats.name + " blocked all incoming damage from the move " + move.moveName + ".",
@@ -43,7 +43,7 @@ public class ThickArmor : PocketMonsterAbility
 
     public override float CalculateDecreasedDamageDealtThroughAbility(float damageDealt, PocketMonster pocketMonster, PocketMonsterMoves move)
     {
-        if (damageDealt <= 50)
+        if (damageDealt <= 65)
         {
             if (move.hasSideEffect)
             {

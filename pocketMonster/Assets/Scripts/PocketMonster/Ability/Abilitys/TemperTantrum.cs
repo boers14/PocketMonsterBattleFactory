@@ -9,13 +9,13 @@ public class TemperTantrum : PocketMonsterAbility
         abilityName = "Temper Tantrum";
         oneTime = true;
         instantEffect = true;
-        abilityDescription = "If the pocketmonster is under 40% health gain maximum attack and speed. One time use.";
+        abilityDescription = "If the pocketmonster is under 45% health gain maximum attack and speed. One time use.";
         base.SetAbilityStats(player);
     }
 
     public override void UseInstantAbility(PocketMonster ownPocketMonster, PocketMonster opponentPocketMonster, InBattleTextManager inBattleTextManager)
     {
-        if (ownPocketMonster.health <= ownPocketMonster.stats.maxHealth * 0.4f)
+        if (ownPocketMonster.health <= ownPocketMonster.stats.maxHealth * 0.45f)
         {
             ownPocketMonster.stats.attack.GetStatChanges(12);
             ownPocketMonster.stats.speed.GetStatChanges(12);
@@ -30,7 +30,7 @@ public class TemperTantrum : PocketMonsterAbility
 
     public override bool GetDecisionForTrainerAi(TrainerAi trainerAi, PocketMonster pocketMonster, PlayerBattle player, PocketMonster target)
     {
-        if (pocketMonster.health <= pocketMonster.stats.maxHealth * 0.4f)
+        if (pocketMonster.health <= pocketMonster.stats.maxHealth * 0.45f)
         {
             return true;
         }

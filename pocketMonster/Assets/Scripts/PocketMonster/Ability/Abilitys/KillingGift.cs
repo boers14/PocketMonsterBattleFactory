@@ -8,7 +8,7 @@ public class KillingGift : PocketMonsterAbility
     {
         abilityName = "Killing Gift";
         onDeath = true;
-        abilityDescription = "Deal 30% max health damage to the opponent and poison the opponent if they don't have any status yet when fainted.";
+        abilityDescription = "Deal 40% max health damage to the opponent and poison the opponent if they don't have any status yet when fainted.";
         base.SetAbilityStats(player);
     }
 
@@ -16,7 +16,7 @@ public class KillingGift : PocketMonsterAbility
     {
         if (!opponentPocketMonster.fainted)
         {
-            opponentPocketMonster.health -= Mathf.Ceil(opponentPocketMonster.stats.maxHealth * 0.3f);
+            opponentPocketMonster.health -= Mathf.Ceil(opponentPocketMonster.stats.maxHealth * 0.4f);
 
             if (opponentPocketMonster.currentStatus == PocketMonster.StatusEffects.None)
             {

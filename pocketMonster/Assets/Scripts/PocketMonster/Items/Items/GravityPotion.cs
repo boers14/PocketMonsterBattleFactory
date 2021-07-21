@@ -17,8 +17,7 @@ public class GravityPotion : PocketMonsterItem
     {
         effectedPocketMonster.currentStatus = PocketMonster.StatusEffects.Airborne;
         opponentPocketMonster.currentStatus = PocketMonster.StatusEffects.Airborne;
-        effectedPocketMonster.RecalculateStatsAfterStatus();
-        opponentPocketMonster.RecalculateStatsAfterStatus();
+
         inBattleTextManager.QueMessage(effectedPocketMonster.stats.name + " and " + opponentPocketMonster.stats.name + " got airborne due to " +
             "the " + name + " of " + effectedPocketMonster.stats.name + ".", false, false, false, false);
     }

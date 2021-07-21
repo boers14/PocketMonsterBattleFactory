@@ -25,7 +25,6 @@ public class Jetpack : PocketMonsterItem
                 message += effectedPocketMonster.stats.name + " got airborne. ";
             }
 
-            effectedPocketMonster.RecalculateStatsAfterStatus();
             effectedPocketMonster.stats.speed.GetStatChanges(2);
             inBattleTextManager.QueMessage(message + effectedPocketMonster.stats.name + " raised it's speed by 2 stages due to it's " + name + "."
                 ,false, false, false, false);

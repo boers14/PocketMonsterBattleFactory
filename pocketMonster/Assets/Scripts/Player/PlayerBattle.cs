@@ -651,12 +651,12 @@ public class PlayerBattle : MonoBehaviour
         actionButtons[index].onClick.AddListener(() => SetUsableMove(index));
     }
 
-    public void QuePocketMonsterTextUpdate(float health, bool particles, bool colorText, bool red = true)
+    public void QuePocketMonsterTextUpdate(float health, bool particles, bool colorText, PocketMonsterMoves move = null, bool red = true)
     {
         string pocketMonsterHealth = DecideIfFainted(health, true);
 
         inBattleTextManager.AddPlayerUpdate(currentPocketMonster, currentPocketMonster.currentStatus, pocketMonsterHealth, "You", true, colorText, red,
-            particles);
+            particles, move);
     }
 
     public void UpdatePlayerText(PocketMonsterTextUpdate textUpdate)
@@ -681,12 +681,12 @@ public class PlayerBattle : MonoBehaviour
         }
     }
 
-    public void QueOpponentPocketMonsterUpdate(float health, bool particles, bool colorText, bool red = true)
+    public void QueOpponentPocketMonsterUpdate(float health, bool particles, bool colorText, PocketMonsterMoves move = null, bool red = true)
     {
         string pocketMonsterHealth = DecideIfFainted(health, false);
 
         inBattleTextManager.AddAiupdate(opponentPocketMonster, opponentPocketMonster.currentStatus, pocketMonsterHealth, "Opponent", true, colorText, red,
-            particles);
+            particles, move);
     }
 
     public void UpdateOpponentText(PocketMonsterTextUpdate textUpdate)

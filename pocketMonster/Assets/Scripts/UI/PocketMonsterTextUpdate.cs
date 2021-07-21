@@ -6,6 +6,8 @@ public class PocketMonsterTextUpdate
 {
     public PocketMonster pocketMonster;
 
+    public PocketMonsterMoves pocketMonsterMove;
+
     public PocketMonster.StatusEffects status;
 
     public string health, player;

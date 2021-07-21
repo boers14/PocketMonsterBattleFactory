@@ -478,7 +478,6 @@ public class GameManager : MonoBehaviour
                 {
                     randomPocketMonster = ChooseRandomPocketMonster(randomListOfPocketMonsters);
                 }
-
                 randomListOfPocketMonsters.Add(randomPocketMonster);
             }
         }

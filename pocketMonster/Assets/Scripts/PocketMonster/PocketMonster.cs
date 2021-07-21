@@ -127,10 +127,18 @@ public class PocketMonster : MonoBehaviour
         if (move.moveSort == PocketMonsterMoves.MoveSort.Physical)
         {
             damageDone = CalculateCriticalDamage(damageDone, critical, stats.attack);
+            if (currentStatus == StatusEffects.Burned)
+            {
+                damageDone /= 2;
+            }
         }
         else if (move.moveSort == PocketMonsterMoves.MoveSort.Special)
         {
             damageDone = CalculateCriticalDamage(damageDone, critical, stats.specialAttack);
+            if (currentStatus == StatusEffects.Bloated)
+            {
+                damageDone /= 2;
+            }
         }
 
         float damageMultiplier = 1;
@@ -193,6 +201,11 @@ public class PocketMonster : MonoBehaviour
             amountOfDamageTaken = CalculateCriticalWhenDefending(amountOfDamageTaken, critical, stats.specialDefense);
         }
 
+        if (currentStatus == StatusEffects.Airborne)
+        {
+            amountOfDamageTaken *= 2;
+        }
+
         amountOfDamageTaken += (amountOfDamageTaken * Random.Range(0.01f, 0.05f));
 
         if (useInAttackAbility)
@@ -235,10 +248,6 @@ public class PocketMonster : MonoBehaviour
         {
             inBattleTextManager.QueBattleMessages(other, move, Mathf.RoundToInt(amountOfDamageTaken), damageMultiplier, critical, fainted, this, missed, 
                 isPlayer);
-            if (amountOfDamageTaken > 0)
-            {
-                SetParticleMat(move, player);
-            }
         }
 
         if (!missed)
@@ -612,32 +621,38 @@ public class PocketMonster : MonoBehaviour
             switch (currentStatus)
             {
                 case StatusEffects.Burned:
-                    stats.attack.actualStat = stats.attack.GetStatChanges(0) / 2;
                     message += stats.name + " lost some health from the burn.";
                     health -= Mathf.Ceil(stats.maxHealth * 0.05f);
                     message = CheckIfBelowZeroHealth(message);
+
+                    stats.speed.actualStat = stats.speed.GetStatChanges(0);
                     break;
                 case StatusEffects.Bloated:
-                    stats.specialAttack.actualStat = stats.specialAttack.GetStatChanges(0) / 2;
                     message += stats.name + " lost some health from being bloated.";
                     health -= Mathf.Ceil(stats.maxHealth * 0.05f);
                     message = CheckIfBelowZeroHealth(message);
+
+                    stats.speed.actualStat = stats.speed.GetStatChanges(0);
                     break;
                 case StatusEffects.Nearsighted:
+                    stats.speed.actualStat = stats.speed.GetStatChanges(0);
                     break;
                 case StatusEffects.Trapped:
                     message += stats.name + " lost some health from the trap.";
                     health -= Mathf.Ceil(stats.maxHealth * 0.05f);
                     message = CheckIfBelowZeroHealth(message);
+
+                    stats.speed.actualStat = stats.speed.GetStatChanges(0);
                     break;
                 case StatusEffects.Airborne:
-                    stats.defense.actualStat = stats.defense.GetStatChanges(0) / 2;
-                    stats.specialDefense.actualStat = stats.specialDefense.GetStatChanges(0) / 2;
+                    stats.speed.actualStat = stats.speed.GetStatChanges(0);
                     break;
                 case StatusEffects.Poisened:
                     message += stats.name + " lost some health from the poison.";
                     health -= Mathf.Ceil(stats.maxHealth * 0.15f);
                     message = CheckIfBelowZeroHealth(message);
+
+                    stats.speed.actualStat = stats.speed.GetStatChanges(0);
                     break;
                 case StatusEffects.Leeched:
                     message += stats.name + " lost some health from leech. ";
@@ -656,14 +671,18 @@ public class PocketMonster : MonoBehaviour
                         opponentPocketMonster.RecalculateHealth();
                     }
                     message = CheckIfBelowZeroHealth(message);
+
+                    stats.speed.actualStat = stats.speed.GetStatChanges(0);
                     break;
                 case StatusEffects.Cursed:
                     message += stats.name + " lost some health from the curse.";
                     health -= Mathf.Ceil(stats.maxHealth * 0.05f);
                     message = CheckIfBelowZeroHealth(message);
+
+                    stats.speed.actualStat = stats.speed.GetStatChanges(0);
                     break;
                 case StatusEffects.Paralyzed:
-                    stats.speed.actualStat = stats.speed.GetStatChanges(0) / 2;
+                    stats.speed.actualStat = stats.speed.GetStatChanges(0) / 4;
                     break;
                 case StatusEffects.None:
                     stats.speed.actualStat = stats.speed.GetStatChanges(0);
@@ -715,37 +734,6 @@ public class PocketMonster : MonoBehaviour
             }
 
             player.CheckIfBattleOver();
-        }
-    }
-
-    public void RecalculateStatsAfterStatus()
-    {
-        switch (currentStatus)
-        {
-            case StatusEffects.Burned:
-                stats.attack.actualStat = stats.attack.GetStatChanges(0) / 2;
-                break;
-            case StatusEffects.Bloated:
-                stats.specialAttack.actualStat = stats.specialAttack.GetStatChanges(0) / 2;
-                break;
-            case StatusEffects.Nearsighted:
-                break;
-            case StatusEffects.Airborne:
-                stats.defense.actualStat = stats.defense.GetStatChanges(0) / 2;
-                stats.specialDefense.actualStat = stats.specialDefense.GetStatChanges(0) / 2;
-                break;
-            case StatusEffects.Paralyzed:
-                stats.speed.actualStat = stats.speed.GetStatChanges(0) / 2;
-                break;
-            case StatusEffects.None:
-                stats.speed.actualStat = stats.speed.GetStatChanges(0);
-                stats.defense.actualStat = stats.defense.GetStatChanges(0);
-                stats.specialDefense.actualStat = stats.specialDefense.GetStatChanges(0);
-                stats.attack.actualStat = stats.attack.GetStatChanges(0);
-                stats.specialAttack.actualStat = stats.specialAttack.GetStatChanges(0);
-                break;
-            default:
-                break;
         }
     }
 
@@ -831,7 +819,6 @@ public class PocketMonster : MonoBehaviour
             stats.boostableStats[i].ResetStats();
         }
 
-        RecalculateStatsAfterStatus();
         stats.critChance = stats.originalCritChance;
     }
 
@@ -859,6 +846,8 @@ public class PocketMonster : MonoBehaviour
 
     public IEnumerator PlayParticlesAttack(PocketMonster other, PlayerBattle playerBattle, PocketMonsterTextUpdate textUpdate, Text text, bool player)
     {
+        SetParticleMat(textUpdate.pocketMonsterMove, playerBattle);
+
         inBattleTextManager.canSkipMessage = false;
         isPlayingParticles = true;
         particleSystem.Play();

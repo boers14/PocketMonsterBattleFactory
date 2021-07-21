@@ -9,7 +9,7 @@ public class KillerInstinct : PocketMonsterAbility
         abilityName = "Killer Instinct";
         oneTime = true;
         instantEffect = true;
-        abilityDescription = "If the opponent is at 30% or lower execute the opponent. One time use.";
+        abilityDescription = "If the opponent is at 40% or lower execute the opponent. One time use.";
         base.SetAbilityStats(player);
     }
 
@@ -17,7 +17,7 @@ public class KillerInstinct : PocketMonsterAbility
     {
         string baseText = ownPocketMonster.stats.name + " used it's ability " + abilityName + ". ";
 
-        if (opponentPocketMonster.health > opponentPocketMonster.stats.maxHealth * 0.3f + 1)
+        if (opponentPocketMonster.health > opponentPocketMonster.stats.maxHealth * 0.4f + 1)
         {
             hasBeenUsed = false;
             inBattleTextManager.QueMessage(baseText + opponentPocketMonster.stats.name + " can't get executed yet.", false, false, false, false);
@@ -49,7 +49,7 @@ public class KillerInstinct : PocketMonsterAbility
 
     public override bool GetDecisionForTrainerAi(TrainerAi trainerAi, PocketMonster pocketMonster, PlayerBattle player, PocketMonster target)
     {
-        if (target.health > target.stats.maxHealth * 0.3f + 1)
+        if (target.health > target.stats.maxHealth * 0.4f + 1)
         {
             return false;
         } else

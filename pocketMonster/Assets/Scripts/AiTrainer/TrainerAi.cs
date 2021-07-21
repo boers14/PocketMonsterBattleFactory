@@ -361,10 +361,26 @@ public class TrainerAi : MonoBehaviour
         if (move.moveSort == PocketMonsterMoves.MoveSort.Physical)
         {
             damageDone = pocketMonster.CalculateCriticalDamage(damageDone, critical, pocketMonster.stats.attack, checkForExtraItems);
+
+            if (stats.intelligence >= 70)
+            {
+                if (pocketMonster.currentStatus == PocketMonster.StatusEffects.Burned)
+                {
+                    damageDone /= 2;
+                }
+            }
         }
         else if (move.moveSort == PocketMonsterMoves.MoveSort.Special)
         {
             damageDone = pocketMonster.CalculateCriticalDamage(damageDone, critical, pocketMonster.stats.specialAttack, checkForExtraItems);
+
+            if (stats.intelligence >= 70)
+            {
+                if (pocketMonster.currentStatus == PocketMonster.StatusEffects.Bloated)
+                {
+                    damageDone /= 2;
+                }
+            }
         }
 
         float damageMultiplier = 1;
@@ -385,6 +401,14 @@ public class TrainerAi : MonoBehaviour
         damageDone *= damageMultiplier;
 
         damageDone = CalculateDamageTaken(move, damageDone, target, pocketMonster, critical, player);
+
+        if (stats.intelligence >= 70)
+        {
+            if (target.currentStatus == PocketMonster.StatusEffects.Airborne)
+            {
+                damageDone *= 2;
+            }
+        }
 
         return damageDone;
     }

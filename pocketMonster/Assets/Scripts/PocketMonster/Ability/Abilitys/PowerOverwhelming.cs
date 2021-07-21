@@ -47,7 +47,6 @@ public class PowerOverwhelming : PocketMonsterAbility
         {
             ownPocketMonster.ResetStats(false, true);
             ownPocketMonster.currentStatus = PocketMonster.StatusEffects.Paralyzed;
-            ownPocketMonster.RecalculateStatsAfterStatus();
             inBattleTextManager.QueMessage(ownPocketMonster.stats.name + " got paralyzed and reset its stats.", false, false, false, false);
         } else
         {

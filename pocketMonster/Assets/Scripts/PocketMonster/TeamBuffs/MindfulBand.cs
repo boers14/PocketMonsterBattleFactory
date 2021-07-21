@@ -15,7 +15,6 @@ public class MindfulBand : PocketMonsterItem
     public override void GrantOnSwitchInEffect(PocketMonster effectedPocketMonster, PocketMonster opponentPocketMonster, InBattleTextManager inBattleTextManager, PlayerBattle player)
     {
         effectedPocketMonster.stats.specialDefense.GetStatChanges(1);
-        effectedPocketMonster.RecalculateStatsAfterStatus();
         base.GrantOnSwitchInEffect(effectedPocketMonster, opponentPocketMonster, inBattleTextManager, player);
     }
 

@@ -7,19 +7,22 @@ public class WeaknessIndentifier : PocketMonsterAbility
     public override void SetAbilityStats(PlayerBattle player)
     {
         abilityName = "Weakness Indentifier";
-        onDeath = true;
-        abilityDescription = "Drops the defensive stats of the opponent to the minimum when fainted.";
+        instantEffect = true;
+        oneTime = true;
+        abilityDescription = "Drops the defensive stats of the opponent to the minimum. One time use.";
         base.SetAbilityStats(player);
     }
 
-    public override void UseOnDeathAbility(PocketMonster ownPocketMonster, PocketMonster opponentPocketMonster, PocketMonsterMoves move, InBattleTextManager inBattleTextManager, bool isPlayer)
+    public override void UseInstantAbility(PocketMonster ownPocketMonster, PocketMonster opponentPocketMonster, InBattleTextManager inBattleTextManager)
     {
-        if (!opponentPocketMonster.fainted)
-        {
-            opponentPocketMonster.stats.defense.GetStatChanges(-12);
-            opponentPocketMonster.stats.specialDefense.GetStatChanges(-12);
-            inBattleTextManager.QueMessage("The defensive stats of " + opponentPocketMonster.stats.name + " got dropped to the minimum.",
-                false, false, false, false);
-        }
+        opponentPocketMonster.stats.defense.GetStatChanges(-12);
+        opponentPocketMonster.stats.specialDefense.GetStatChanges(-12);
+        inBattleTextManager.QueMessage("The defensive stats of " + opponentPocketMonster.stats.name + " got dropped to the minimum.",
+            false, false, false, false);
+    }
+
+    public override bool GetDecisionForTrainerAi(TrainerAi trainerAi, PocketMonster pocketMonster, PlayerBattle player, PocketMonster target)
+    {
+        return true;
     }
 }

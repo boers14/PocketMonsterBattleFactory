@@ -13,8 +13,8 @@ public class BlindingLight : PocketMonsterMoves
         moveSort = MoveSort.Physical;
         baseDamage = 55;
         hasSideEffect = true;
-        chanceOfSideEffect = 30;
-        moveDescription = "Has a 30% chance to nearsight the opposing pocketmonster. 10 power points.";
+        chanceOfSideEffect = 50;
+        moveDescription = "Has a 50% chance to nearsight the opposing pocketmonster. 10 power points.";
     }
 
     public override void GrantSideEffect(PocketMonster ownPocketMonster, PocketMonster opponentPocketMonster, float damageDone, InBattleTextManager inBattleTextManager, PlayerBattle player)

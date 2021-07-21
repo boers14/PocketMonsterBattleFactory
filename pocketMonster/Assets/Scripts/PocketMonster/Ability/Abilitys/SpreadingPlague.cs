@@ -9,7 +9,7 @@ public class SpreadingPlague : PocketMonsterAbility
         abilityName = "Spreading Plague";
         oneTime = false;
         instantEffect = true;
-        abilityDescription = "Inflicts a random status on both pocketmonsters when used. Overwrites current statusses. Can be used multiple times.";
+        abilityDescription = "Inflicts a random status on opponent pocketmonster when used. Overwrites current status. Can be used multiple times.";
         base.SetAbilityStats(player);
     }
 
@@ -19,23 +19,24 @@ public class SpreadingPlague : PocketMonsterAbility
         PocketMonster.StatusEffects status = PocketMonster.StatusEffects.None;
         status -= randomStatus;
         opponentPocketMonster.currentStatus = status;
-        ownPocketMonster.currentStatus = status;
 
-        ownPocketMonster.RecalculateStatsAfterStatus();
-        opponentPocketMonster.RecalculateStatsAfterStatus();
+        if (status == PocketMonster.StatusEffects.Paralyzed)
+        {
+            opponentPocketMonster.stats.speed.actualStat = opponentPocketMonster.stats.speed.GetStatChanges(0) / 4;
+        } 
 
         inBattleTextManager.QueMessage(ownPocketMonster.stats.name + " used " + abilityName + ". " + ownPocketMonster.stats.name + " inflicted the " +
-          status + " status on both pocketmonsters.", false, false, false, false);
+          status + " status on opponent pocketmonster.", false, false, false, false);
     }
 
     public override bool GetDecisionForTrainerAi(TrainerAi trainerAi, PocketMonster pocketMonster, PlayerBattle player, PocketMonster target)
     {
-        if (pocketMonster.currentStatus == PocketMonster.StatusEffects.None && target.currentStatus != PocketMonster.StatusEffects.None)
-        {
-            return false;
-        } else
+        if (target.currentStatus == PocketMonster.StatusEffects.None)
         {
             return true;
+        } else
+        {
+            return false;
         }
     }
 }

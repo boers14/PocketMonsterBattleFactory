@@ -25,7 +25,6 @@ public class IllWill : PocketMonsterAbility
                 PocketMonster.StatusEffects status = PocketMonster.StatusEffects.None;
                 status -= randomStatus;
                 teamToDebuff[i].currentStatus = status;
-                teamToDebuff[i].RecalculateStatsAfterStatus();
             } else
             {
                 nonAffectedCounter++;

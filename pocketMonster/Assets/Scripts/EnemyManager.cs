@@ -44,6 +44,7 @@ public class EnemyManager : MonoBehaviour
                 randomPocketMonster = ChooseRandomPocketMonster(randomListOfPocketMonsters, possiblePocketMonsters);
             }
             randomListOfPocketMonsters.Add(randomPocketMonster);
+
             PocketMonster enemyPocketMonster = Instantiate(randomPocketMonster);
 
             List<PocketMonsterMoves> randomMoveList = new List<PocketMonsterMoves>();
@@ -549,12 +550,17 @@ public class EnemyManager : MonoBehaviour
 
         teamsCreated++;
 
-        if (teamsCreated != 0 && teamsCreated % 3 == 0)
+        if (teamsCreated != 0 && teamsCreated % 2 == 0)
         {
             currentIntelligence += 10;
         }
 
-        if (teamsCreated != 0 && teamsCreated % 8 == 0 && amountOfItems < 3)
+        if (gameManager.lastBattle)
+        {
+            currentIntelligence = 100;
+        }
+
+        if (teamsCreated != 0 && teamsCreated % 6 == 0 && amountOfItems < 3)
         {
             amountOfItems++;
         }

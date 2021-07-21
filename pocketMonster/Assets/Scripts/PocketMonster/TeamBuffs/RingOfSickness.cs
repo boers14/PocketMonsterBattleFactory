@@ -20,7 +20,6 @@ public class RingOfSickness : PocketMonsterItem
             PocketMonster.StatusEffects status = PocketMonster.StatusEffects.None;
             status -= randomStatus;
             opponentPocketMonster.currentStatus = status;
-            opponentPocketMonster.RecalculateStatsAfterStatus();
             inBattleTextManager.QueMessage(effectedPocketMonster.stats.name + " inflicted the " + status + " status on the opponent due to the " + name
                 + ".", false, false, false, false);
         }
