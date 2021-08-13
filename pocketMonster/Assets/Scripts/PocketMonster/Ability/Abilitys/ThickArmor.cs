@@ -23,8 +23,13 @@ public class ThickArmor : PocketMonsterAbility
 
     public override void UseInAttackAbility(PocketMonster ownPocketMonster, PocketMonster opponentPocketMonster, PocketMonsterMoves move, InBattleTextManager inBattleTextManager)
     {
+        endOfDamageCalc = true;
         ownPocketMonster.useInAttackAbility = true;
+    }
 
+    public override void UseEndOfDamageCalcAbility(PocketMonster ownPocketMonster, PocketMonster opponentPocketMonster, PocketMonsterMoves move, InBattleTextManager inBattleTextManager)
+    {
+        base.UseEndOfDamageCalcAbility(ownPocketMonster, opponentPocketMonster, move, inBattleTextManager);
         if (ownPocketMonster.amountOfDamageTaken > 0)
         {
             if (ownPocketMonster.amountOfDamageTaken <= 65)

@@ -234,6 +234,27 @@ public class PocketMonster : MonoBehaviour
 
         amountOfDamageTaken = Mathf.Ceil(amountOfDamageTaken);
 
+        if (ability.endOfDamageCalc)
+        {
+            ability.UseEndOfDamageCalcAbility(this, other, move, inBattleTextManager);
+        }
+
+        if (other.ability.endOfDamageCalc)
+        {
+            other.ability.UseEndOfDamageCalcAbility(other, this, move, inBattleTextManager);
+        }
+
+        if (!isPlayer)
+        {
+            other.GetAfterDamageCalcItemEffects(player.teamBuffs, move, this, true);
+            GetAfterDamageCalcItemEffects(player.opponentTrainer.stats.teamBuffs, move, other, false);
+        }
+        else
+        {
+            other.GetAfterDamageCalcItemEffects(player.opponentTrainer.stats.teamBuffs, move, this, true);
+            GetAfterDamageCalcItemEffects(player.teamBuffs, move, other, false);
+        }
+
         if (health - amountOfDamageTaken < 0)
         {
             amountOfDamageTaken = health;
@@ -573,6 +594,8 @@ public class PocketMonster : MonoBehaviour
 
     public void GetOnSwitchItemEffects(List<PocketMonsterItem> teamBuffs, PlayerBattle player, PocketMonster opponentPocketMonster)
     {
+        CheckForParalazys();
+
         for (int i = 0; i < items.Count; i++)
         {
             if (items[i].onSwitch)
@@ -776,6 +799,46 @@ public class PocketMonster : MonoBehaviour
         }
     }
 
+    public void GetAfterDamageCalcItemEffects(List<PocketMonsterItem> teamBuffs, PocketMonsterMoves move, PocketMonster opponentPocketmonster, bool attackTurn)
+    {
+        if (attackTurn)
+        {
+            for (int i = 0; i < items.Count; i++)
+            {
+                if (items[i].endOfDamageCalc)
+                {
+                    items[i].GrantEndOfDamageCalcEffect(this, move, opponentPocketmonster, inBattleTextManager, attackTurn);
+                }
+            }
+
+            for (int i = 0; i < teamBuffs.Count; i++)
+            {
+                if (teamBuffs[i].endOfDamageCalc)
+                {
+                    teamBuffs[i].GrantEndOfDamageCalcEffect(this, move, opponentPocketmonster, inBattleTextManager, attackTurn);
+                }
+            }
+        }
+        else
+        {
+            for (int i = 0; i < items.Count; i++)
+            {
+                if (items[i].endOfDamageCalc)
+                {
+                    items[i].GrantEndOfDamageCalcEffect(this, move, opponentPocketmonster, inBattleTextManager, attackTurn);
+                }
+            }
+
+            for (int i = 0; i < teamBuffs.Count; i++)
+            {
+                if (teamBuffs[i].endOfDamageCalc)
+                {
+                    teamBuffs[i].GrantEndOfDamageCalcEffect(this, move, opponentPocketmonster, inBattleTextManager, attackTurn);
+                }
+            }
+        }
+    }
+
     private string CheckIfBelowZeroHealth(string message)
     {
         if (health <= 0)
@@ -820,6 +883,8 @@ public class PocketMonster : MonoBehaviour
         }
 
         stats.critChance = stats.originalCritChance;
+
+        CheckForParalazys();
     }
 
     public void SetInBattleTextManager(InBattleTextManager inBattleTextManager)
@@ -841,6 +906,17 @@ public class PocketMonster : MonoBehaviour
         if (health > stats.maxHealth)
         {
             health = stats.maxHealth;
+        }
+    }
+
+    public void CheckForParalazys()
+    {
+        if (currentStatus == StatusEffects.Paralyzed)
+        {
+            stats.speed.actualStat = stats.speed.GetStatChanges(0) / 4;
+        } else
+        {
+            stats.speed.actualStat = stats.speed.GetStatChanges(0);
         }
     }
 
@@ -962,6 +1038,9 @@ public class PocketMonster : MonoBehaviour
                 break;
             case PocketMonsterStats.Typing.Wind:
                 GetComponent<ParticleSystemRenderer>().material = player.windMat;
+                break;
+            case PocketMonsterStats.Typing.None:
+                GetComponent<ParticleSystemRenderer>().material = player.noTypeMat;
                 break;
         }
     }

@@ -9,7 +9,7 @@ public class SacrificialPact : PocketMonsterAbility
         abilityName = "Sacrificial Pact";
         oneTime = true;
         instantEffect = true;
-        abilityDescription = "If the opponent is at 75% or lower execute the opponent, but also executes itself. Must be at the same amount " +
+        abilityDescription = "If the opponent is at 80% or lower execute the opponent, but also executes itself. Must be at the same amount " +
             "or a lower health amount then the opponent to use. One time use.";
         base.SetAbilityStats(player);
     }
@@ -19,7 +19,7 @@ public class SacrificialPact : PocketMonsterAbility
         string baseText = ownPocketMonster.stats.name + " used it's ability " + abilityName + ". ";
 
         if (ownPocketMonster.health / ownPocketMonster.stats.maxHealth < opponentPocketMonster.health / opponentPocketMonster.stats.maxHealth || 
-            opponentPocketMonster.health > opponentPocketMonster.stats.maxHealth * 0.75f)
+            opponentPocketMonster.health > opponentPocketMonster.stats.maxHealth * 0.8f)
         {
             if (opponentPocketMonster.stats.maxHealth > 1)
             {
@@ -60,18 +60,57 @@ public class SacrificialPact : PocketMonsterAbility
     public override bool GetDecisionForTrainerAi(TrainerAi trainerAi, PocketMonster pocketMonster, PlayerBattle player, PocketMonster target)
     {
         if (pocketMonster.health / pocketMonster.stats.maxHealth < target.health / target.stats.maxHealth ||
-                target.health > target.stats.maxHealth * 0.75f)
+                        target.health > target.stats.maxHealth * 0.8f)
         {
-            if (target.stats.maxHealth > 1)
+            return false;
+        }
+
+        int aliveCounter = 0;
+        for (int i = 0; i < trainerAi.pocketMonsters.Count; i++)
+        {
+            if (!trainerAi.pocketMonsters[i].fainted)
             {
-                return false;
+                aliveCounter++;
+            }
+        }
+
+        if (aliveCounter > 1)
+        {
+            bool winsMatchup = false;
+            if (pocketMonster.stats.speed.actualStat > target.stats.speed.actualStat)
+            {
+                float damageDealt = trainerAi.CalculateComparativeDamage(pocketMonster, target, player);
+                if (damageDealt >= target.health)
+                {
+                    winsMatchup = true;
+                }
+            }
+
+            if (!winsMatchup)
+            {
+                if (pocketMonster.health / pocketMonster.stats.maxHealth < target.health / target.stats.maxHealth ||
+                        target.health > target.stats.maxHealth * 0.8f)
+                {
+                    if (target.stats.maxHealth > 1)
+                    {
+                        return false;
+                    }
+                    else
+                    {
+                        return true;
+                    }
+                }
+                else
+                {
+                    return true;
+                }
             } else
             {
-                return true;
+                return false;
             }
         } else
         {
-            return true;
+            return false;
         }
     }
 }

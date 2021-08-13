@@ -23,6 +23,12 @@ public class StartScreenManager : MonoBehaviour
 
     void Start()
     {
+        GameObject gameManager = GameObject.FindGameObjectWithTag("GameManager");
+        if (gameManager != null)
+        {
+            Destroy(gameManager);
+        }
+
         bg.rectTransform.sizeDelta = canvas.GetComponent<RectTransform>().sizeDelta;
 
         Text titel = Instantiate(uiText);
@@ -50,7 +56,9 @@ public class StartScreenManager : MonoBehaviour
         buttonSize.x = canvas.GetComponent<RectTransform>().sizeDelta.x / 4;
         startButton.GetComponent<RectTransform>().sizeDelta = buttonSize;
 
-        startButton.GetComponent<RectTransform>().localPosition = Vector3.zero;
+        Vector2 startButtonPos = Vector3.zero;
+        startButtonPos.y = buttonSize.y / 4;
+        startButton.GetComponent<RectTransform>().localPosition = startButtonPos;
 
         startButton.GetComponentInChildren<Text>().text = "Play!";
         startButton.onClick.AddListener(() => switchScene(chooseGameStateScene));
@@ -64,15 +72,32 @@ public class StartScreenManager : MonoBehaviour
         infoButton.GetComponent<RectTransform>().sizeDelta = infoButtonSize;
 
         Vector2 infoButtonPos = Vector3.zero;
-        infoButtonPos.y = -buttonSize.y / 2 - infoButtonSize.y / 2 - buttonSize.y / 8;
+        infoButtonPos.y = startButtonPos.y - buttonSize.y / 2 - infoButtonSize.y / 2 - buttonSize.y / 8;
         infoButton.GetComponent<RectTransform>().localPosition = infoButtonPos;
 
         infoButton.GetComponentInChildren<Text>().text = "Instructions";
         infoButton.onClick.AddListener(() => switchScene(instructionScene));
+
+        Button quitButton = Instantiate(uiButton);
+        quitButton.transform.SetParent(canvas.transform);
+
+        quitButton.GetComponent<RectTransform>().sizeDelta = infoButtonSize;
+
+        Vector2 quitButtonPos = Vector3.zero;
+        quitButtonPos.y = infoButtonPos.y - (infoButtonSize.y / 2 * 2) - buttonSize.y / 8;
+        quitButton.GetComponent<RectTransform>().localPosition = quitButtonPos;
+
+        quitButton.GetComponentInChildren<Text>().text = "Exit game";
+        quitButton.onClick.AddListener(ExitGame);
     }
 
     private void switchScene(string scene)
     {
         SceneManager.LoadScene(scene);
+    }
+
+    private void ExitGame()
+    {
+        Application.Quit();
     }
 }

@@ -148,7 +148,7 @@ public class PlayerPocketMonsterMenu : MonoBehaviour
         }
     }
 
-    private void CreateAllPocketMonstersUI()
+    public void CreateAllPocketMonstersUI()
     {
         if (isUiOn)
         {
@@ -337,8 +337,10 @@ public class PlayerPocketMonsterMenu : MonoBehaviour
         texts.Add(teamBuffText);
     }
 
-    private void CreateBg()
+    public void CreateBg()
     {
+        bgs.Clear();
+
         GameObject canvas = GameObject.Find("Canvas");
         Image newBg = Instantiate(bg);
         newBg.transform.SetParent(canvas.transform);
@@ -359,7 +361,7 @@ public class PlayerPocketMonsterMenu : MonoBehaviour
             }
             else
             {
-                size.x = canvas.GetComponent<RectTransform>().sizeDelta.y;
+                size.x = canvas.GetComponent<RectTransform>().sizeDelta.y - (canvas.GetComponent<RectTransform>().sizeDelta.y / teamBuffTextPos);
             }
 
             size.y = 2;
@@ -375,7 +377,7 @@ public class PlayerPocketMonsterMenu : MonoBehaviour
             }
             else if (i == 1)
             {
-                pos.y -= canvas.GetComponent<RectTransform>().sizeDelta.y / teamBuffTextPos;
+                pos.y -= canvas.GetComponent<RectTransform>().sizeDelta.y / teamBuffTextPos / 2;
             }
             else
             {
@@ -423,6 +425,36 @@ public class PlayerPocketMonsterMenu : MonoBehaviour
 
         pocketMontersInformations.Clear();
     }
+
+    public void AdjustMenuScale(float scaleChange)
+    {
+        Transform originalBg = bgs[0].transform;
+
+        for (int i = 0; i < texts.Count; i++)
+        {
+            texts[i].transform.SetParent(originalBg);
+        }
+
+        for (int i = 0; i < hoverableTexts.Count; i++)
+        {
+            hoverableTexts[i].transform.SetParent(originalBg);
+        }
+
+        for (int i = 1; i < bgs.Count; i++)
+        {
+            bgs[i].transform.SetParent(originalBg);
+        }
+
+        Vector2 originalSize = originalBg.GetComponent<RectTransform>().sizeDelta;
+        Vector2 size = Vector2.zero;
+        size.x = originalBg.GetComponent<RectTransform>().sizeDelta.x / scaleChange;
+        size.y = originalBg.GetComponent<RectTransform>().sizeDelta.y / scaleChange;
+        originalBg.GetComponent<RectTransform>().sizeDelta = size;
+            
+        SetUIStats.LoopTroughtChilds(originalBg, size, originalSize);
+    }
+
+
 
     public void SetGameManager(GameManager gameManager)
     {

@@ -1,4 +1,4 @@
-﻿using System.Collections;
+﻿ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,7 +9,7 @@ public class AttackBooster : PocketMonsterItem
     public override void SetStats()
     {
         onSwitch = true;
-        attackTurn = true;
+        endOfDamageCalc = true;
         name = "Attack booster";
         itemDescription = "At start of battle increase attack by 2 stages, but take 50% recoil on attack.";
         itemSort = ItemSort.PhysicalOffense;
@@ -23,18 +23,23 @@ public class AttackBooster : PocketMonsterItem
         playerBattle = player;
     }
 
-    public override void GrantAttackTurnEffect(PocketMonster effectedPocketMonster, PocketMonsterMoves move,
-        PocketMonster opponentPocketmonster, InBattleTextManager inBattleTextManager)
+    public override void GrantEndOfDamageCalcEffect(PocketMonster effectedPocketMonster, PocketMonsterMoves move, PocketMonster opponentPocketMonster,
+        InBattleTextManager inBattleTextManager, bool defenseTurn)
     {
-        if (move.moveSort == PocketMonsterMoves.MoveSort.Physical)
+        if (!defenseTurn)
         {
-            float recoil = opponentPocketmonster.amountOfDamageTaken;
+            return;
+        }
+
+        if (move.moveSort == PocketMonsterMoves.MoveSort.Physical && !effectedPocketMonster.fainted)
+        {
+            float recoil = opponentPocketMonster.amountOfDamageTaken;
 
             if (recoil > 0)
             {
-                if (recoil > opponentPocketmonster.health)
+                if (recoil > opponentPocketMonster.health)
                 {
-                    recoil = opponentPocketmonster.health;
+                    recoil = opponentPocketMonster.health;
                 }
 
                 effectedPocketMonster.health -= Mathf.Ceil(recoil * 0.5f);

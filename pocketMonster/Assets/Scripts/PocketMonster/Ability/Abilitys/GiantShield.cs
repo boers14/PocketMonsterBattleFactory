@@ -28,13 +28,19 @@ public class GiantShield : PocketMonsterAbility
         inBattleTextManager.QueMessage(ownPocketMonster.stats.name + " did halve damage due to the " + abilityName + ".", false, false, false, false);
     }
 
-    public override void UseInAttackAbility(PocketMonster ownPocketMonster, PocketMonster opponentPocketMonster, PocketMonsterMoves move,
-        InBattleTextManager inBattleTextManager)
+    public override void UseEndOfDamageCalcAbility(PocketMonster ownPocketMonster, PocketMonster opponentPocketMonster, PocketMonsterMoves move, InBattleTextManager inBattleTextManager)
     {
+        base.UseEndOfDamageCalcAbility(ownPocketMonster, opponentPocketMonster, move, inBattleTextManager);
         ownPocketMonster.amountOfDamageTaken /= 2;
 
         inBattleTextManager.QueMessage(ownPocketMonster.stats.name + " used " + abilityName + ". " + ownPocketMonster.stats.name + " halved the damage " +
             "taken.", false, false, false, false);
+    }
+
+    public override void UseInAttackAbility(PocketMonster ownPocketMonster, PocketMonster opponentPocketMonster, PocketMonsterMoves move,
+        InBattleTextManager inBattleTextManager)
+    {
+        endOfDamageCalc = true;
     }
 
     public override bool GetDecisionForTrainerAi(TrainerAi trainerAi, PocketMonster pocketMonster, PlayerBattle player, PocketMonster target)

@@ -26,6 +26,8 @@ public class CleansedMind : PocketMonsterAbility
             extraText += ownPocketMonster.stats.name + " set both statusses to none. " + ownPocketMonster.stats.name + " raised both defenses by on stage.";
             ownPocketMonster.stats.specialDefense.GetStatChanges(1);
             ownPocketMonster.stats.defense.GetStatChanges(1);
+            ownPocketMonster.CheckForParalazys();
+            opponentPocketMonster.CheckForParalazys();
             base.UseInstantAbility(ownPocketMonster, opponentPocketMonster, inBattleTextManager);
         } else
         {

@@ -26,14 +26,27 @@ public class PowerOverwhelming : PocketMonsterAbility
                 base.UseInstantAbility(ownPocketMonster, opponentPocketMonster, inBattleTextManager);
             } else
             {
-                if (player.opponentTrainer.firstTurn || !player.opponentTrainer.wantsToSwitch)
-                {
-                    IncreaseAllStats(ownPocketMonster, opponentPocketMonster, inBattleTextManager);
-                } else
-                {
-                    ownPocketMonster.aftermathOfAbility = true;
-                }
+                CheckIfShouldActivateAbilityForOpponent(ownPocketMonster, opponentPocketMonster, inBattleTextManager);
             }
+        }
+        else
+        {
+            if (player.pocketMonsters.Contains(ownPocketMonster))
+            {
+                ownPocketMonster.aftermathOfAbility = true;
+            }
+            else
+            {
+                CheckIfShouldActivateAbilityForOpponent(ownPocketMonster, opponentPocketMonster, inBattleTextManager);
+            }
+        }
+    }
+
+    private void CheckIfShouldActivateAbilityForOpponent(PocketMonster ownPocketMonster, PocketMonster opponentPocketMonster, InBattleTextManager inBattleTextManager)
+    {
+        if (player.opponentTrainer.firstTurn || !player.opponentTrainer.wantsToSwitch)
+        {
+            IncreaseAllStats(ownPocketMonster, opponentPocketMonster, inBattleTextManager);
         }
         else
         {

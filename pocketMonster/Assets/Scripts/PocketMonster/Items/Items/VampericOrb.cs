@@ -5,9 +5,10 @@ using UnityEngine;
 public class VampericOrb : PocketMonsterItem
 {
     private PlayerBattle playerBattle;
+
     public override void SetStats()
     {
-        attackTurn = true;
+        endOfDamageCalc = true;
         onSwitch = true;
         name = "Vamperic orb";
         itemDescription = "Restore 50% of damage dealt to the opponent, but decrease speed by one stage on switch in.";
@@ -22,17 +23,22 @@ public class VampericOrb : PocketMonsterItem
         playerBattle = player;
     }
 
-    public override void GrantAttackTurnEffect(PocketMonster effectedPocketMonster, PocketMonsterMoves move,
-        PocketMonster opponentPocketmonster, InBattleTextManager inBattleTextManager)
+    public override void GrantEndOfDamageCalcEffect(PocketMonster effectedPocketMonster, PocketMonsterMoves move, PocketMonster opponentPocketMonster,
+        InBattleTextManager inBattleTextManager, bool defenseTurn)
     {
-        if (opponentPocketmonster.amountOfDamageTaken > 0 && effectedPocketMonster.health < effectedPocketMonster.stats.maxHealth 
+        if (!defenseTurn)
+        {
+            return;
+        }
+
+        if (opponentPocketMonster.amountOfDamageTaken > 0 && effectedPocketMonster.health < effectedPocketMonster.stats.maxHealth 
             && !effectedPocketMonster.fainted)
         {
-            float damageDone = opponentPocketmonster.amountOfDamageTaken;
+            float damageDone = opponentPocketMonster.amountOfDamageTaken;
 
-            if (damageDone > opponentPocketmonster.health)
+            if (damageDone > opponentPocketMonster.health)
             {
-                damageDone = opponentPocketmonster.health;
+                damageDone = opponentPocketMonster.health;
             } 
 
             float restoredHealth = damageDone / 2;

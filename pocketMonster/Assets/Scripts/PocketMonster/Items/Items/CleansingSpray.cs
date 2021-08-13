@@ -23,6 +23,7 @@ public class CleansingSpray : PocketMonsterItem
             {
                 message += effectedPocketMonster.stats.name;
                 effectedPocketMonster.currentStatus = PocketMonster.StatusEffects.None;
+                effectedPocketMonster.CheckForParalazys();
             }
 
             if (opponentPocketMonster.currentStatus != PocketMonster.StatusEffects.None)
@@ -34,6 +35,7 @@ public class CleansingSpray : PocketMonsterItem
 
                 message += opponentPocketMonster.stats.name;
                 opponentPocketMonster.currentStatus = PocketMonster.StatusEffects.None;
+                opponentPocketMonster.CheckForParalazys();
             }
 
             inBattleTextManager.QueMessage("The status of " + message + " got set to none due to " +

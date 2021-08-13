@@ -410,6 +410,7 @@ MonoBehaviour:
     type: 3}
   bg: {fileID: 431645676}
   gameScene: ChooseGameState
+  startScene: StartScene
 --- !u!4 &1267851926
 Transform:
   m_ObjectHideFlags: 0

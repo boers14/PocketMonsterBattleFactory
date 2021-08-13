@@ -8,27 +8,32 @@ public class GameManager : MonoBehaviour
 {
     [SerializeField]
     private GameObject playerObject = null, trainer = null, pocketMonsterGiver = null, itemGiver = null, teamBuffGiver = null, moveGiver = null, 
-        terrainManager = null, inBattleTextManager = null, enemyManager = null;
+        terrainManager = null, inBattleTextManager = null, enemyManager = null, exitGameMenu = null;
 
     [SerializeField]
     private Vector3 initialPlayerPos = Vector3.zero;
 
+    [System.NonSerialized]
     public List<PocketMonster> playerPocketMonsters = new List<PocketMonster>(), aiPocketMonsters = new List<PocketMonster>();
+    [System.NonSerialized]
     public List<PocketMonsterItem> teamBuffsOfPlayer = new List<PocketMonsterItem>();
 
     public List<PocketMonster> allPocketMonsters = new List<PocketMonster>();
 
+    [System.NonSerialized]
     public List<PocketMonsterMoves> allPocketMonstersMoves = new List<PocketMonsterMoves>();
 
+    [System.NonSerialized]
     public List<PocketMonsterItem> allPocketMonsterItems = new List<PocketMonsterItem>();
 
+    [System.NonSerialized]
     public List<PocketMonsterItem> allTeamBuffs = new List<PocketMonsterItem>();
 
     [SerializeField]
     private int amountOfPicks = 3, maxAmountOfMoves = 4, maxAmountOfItems = 3, maxAmountOfTeamBuffs = 3, maxTeamSize = 4;
 
     [SerializeField]
-    private Button buttonPrefab = null, hoverableButtonPrefab = null;
+    private Button buttonPrefab = null, hoverableButtonPrefab = null, exitButton = null;
 
     private List<Button> buttons = new List<Button>();
 
@@ -39,14 +44,20 @@ public class GameManager : MonoBehaviour
     private Image imagePrefab = null;
 
     private Text information = null;
+    [System.NonSerialized]
     public Text livesText = null;
     private List<Text> extraTexts = new List<Text>();
     private List<Image> bgsForTexts = new List<Image>();
 
+    [System.NonSerialized]
     public List<GameObject> mergants = new List<GameObject>();
+    [System.NonSerialized]
     public List<GameObject> trainers = new List<GameObject>();
+    [System.NonSerialized]
     public List<PocketMonsterMoves> currentMovesHandedOut = new List<PocketMonsterMoves>();
+    [System.NonSerialized]
     public List<PocketMonsterItem> currentItemsHandedOut = new List<PocketMonsterItem>();
+    [System.NonSerialized]
     public CurrentMergant currentMergant = CurrentMergant.PocketMonster;
 
     public int lives = 3;
@@ -71,21 +82,28 @@ public class GameManager : MonoBehaviour
         PocketMonster
     }
 
+    [System.NonSerialized]
     public List<PickupsInGauntlet> pickups = new List<PickupsInGauntlet>();
 
+    [System.NonSerialized]
     public BigPickups nextBigPickUp = BigPickups.PocketMonster;
 
+    [System.NonSerialized]
     public int currentPickUp = 0, itemHandOutIndex = 0;
 
+    [System.NonSerialized]
     public List<PocketMonsterMoves> allMovesHandedOut = new List<PocketMonsterMoves>();
 
+    [System.NonSerialized]
     public List<PocketMonsterItem> itemsToHandOut = new List<PocketMonsterItem>();
+    [System.NonSerialized]
     public List<PocketMonsterMoves> movesToHandOut = new List<PocketMonsterMoves>();
 
-    public bool lastBattle = false;
+    [System.NonSerialized]
+    public bool lastBattle = false, playerWon = true, loadedData = false;
 
     [SerializeField]
-    private string startScreenName = "";
+    private string endScreenName = "";
 
     private InBattleTextManager battleTextManager;
 
@@ -93,14 +111,27 @@ public class GameManager : MonoBehaviour
 
     private TerrainManager managerOfTheTerrains;
 
-    private PlayerBattle playerBattle;
+    [System.NonSerialized]
+    public PlayerBattle playerBattle = null;
 
     public Material teamBuffMaterial = null, finalBattleMaterial = null, pocketMonsterMaterial = null, itemMaterial = null, moveMaterial = null;
 
+    [System.NonSerialized]
     public List<int> playerPocketMonsterInInt = new List<int>(), playerPocketMonstersAbilityInInt = new List<int>(), teamBuffsOfPlayerInInt = new List<int>(),
         allMovesHandedOutInInt = new List<int>(), itemsToHandOutInInt = new List<int>(), movesToHandOutInInt = new List<int>(),
         currentMovesHandedOutInInt = new List<int>(), currentItemsHandedOutInInt = new List<int>();
+
+    [System.NonSerialized]
     public List<List<int>> playerPocketMonsterMovesInInt = new List<List<int>>(), playerPocketMonsterItemsInInt = new List<List<int>>();
+
+    private Button exitGameButton = null;
+
+    private Text savingText = null;
+
+    [SerializeField]
+    private Color32 savingTextStartColor = Color.black, savingTextEndColor = Color.black;
+
+    private bool canSave = true;
 
     void Start()
     {
@@ -109,6 +140,9 @@ public class GameManager : MonoBehaviour
             Destroy(gameObject);
             return;
         }
+        DontDestroyOnLoad(gameObject);
+
+        Canvas canvas = GameObject.Find("Canvas").GetComponent<Canvas>();
 
         FillPocketMonsterMoveList();
         FillPocketMonsterItemList();
@@ -117,6 +151,7 @@ public class GameManager : MonoBehaviour
         if (GameObject.FindGameObjectsWithTag("LoadObject").Length > 0)
         {
             Destroy(GameObject.FindGameObjectWithTag("LoadObject"));
+            loadedData = true;
             PlayerData data = SaveSytem.LoadGame();
 
             lastBattle = data.lastBattle;
@@ -288,13 +323,29 @@ public class GameManager : MonoBehaviour
         }
 
         livesText = Instantiate(textPrefab);
-        playerBattle.SetUIPosition(livesText.gameObject, 6, 12, 2, 2, 1, 1);
+        SetUIStats.SetUIPosition(canvas, livesText.gameObject, 6, 12, 2, 2, 1, 1);
         livesText.text = "Lives: " + lives;
+
+        exitGameButton = Instantiate(exitButton);
+        SetUIStats.SetUIPosition(canvas, exitGameButton.gameObject, 25, 6, 2, 2, 1, -1, 0, false, false, true, true);
+
+        GameObject exitMenu = Instantiate(exitGameMenu);
+        SetUIStats.SetUIPosition(canvas, exitMenu.gameObject, 4, 4, 0, 0, 1, 1, 0, false, false, true);
+        exitMenu.GetComponentInChildren<ExitGameNoButton>().exitGameButton = exitGameButton.GetComponent<ExitGameButton>();
+        exitMenu.SetActive(false);
+        exitGameButton.GetComponent<ExitGameButton>().exitGameMenu = exitMenu;
+
+        savingText = Instantiate(textPrefab);
+        SetUIStats.SetUIPosition(canvas, savingText.gameObject, 2, 4, 0, 0, 1, 1);
+        savingText.text = "Saved game!";
+        savingText.color = savingTextEndColor;
+
+        DontDestroyOnLoad(playerBattle.gameObject);
     }
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.S) && !playerBattle.isInBattle)
+        if (Input.GetKeyDown(KeyCode.S) && !playerBattle.isInBattle && canSave)
         {
             SaveData();
         }
@@ -1653,13 +1704,26 @@ public class GameManager : MonoBehaviour
         livesText.text = "Lives: " + lives;
         if (lives <= 0)
         {
-            SwitchToStartScreen();
+            SwitchToEndScreen(false);
         }
     }
 
-    public void SwitchToStartScreen()
+    public void SwitchToEndScreen(bool playerWon)
     {
-        SceneManager.LoadScene(startScreenName);
+        this.playerWon = playerWon;
+        SaveSytem.DeleteGame();
+        SceneManager.LoadScene(endScreenName);
+    }
+
+    public void EnableWorldUI(bool enabled)
+    {
+        livesText.gameObject.SetActive(enabled);
+        exitGameButton.gameObject.SetActive(enabled);
+
+        if (exitGameButton.GetComponent<ExitGameButton>().menuIsEnabled)
+        {
+            exitGameButton.GetComponent<ExitGameButton>().EnableMenu();
+        }
     }
 
     private void SaveData()
@@ -1730,6 +1794,31 @@ public class GameManager : MonoBehaviour
         TranslateItemsToInt(currentItemsHandedOutInInt, currentItemsHandedOut, allPocketMonsterItems);
         TranslateMovesToInt(currentMovesHandedOutInInt, currentMovesHandedOut);
         SaveSytem.SaveGame(playerBattle.gameObject, this, managerOfEnemys, managerOfTheTerrains);
+
+        TweenSavingTextColor();
+    }
+
+    private void TweenSavingTextColor()
+    {
+        canSave = false;
+        savingText.color = savingTextStartColor;
+        iTween.ValueTo(gameObject, iTween.Hash("from", 0f, "to", 1f, "time", 1, "onupdate", "UpdateSavingTextColor",
+            "oncomplete", "SetToCanSaveAgain", "oncompletetarget", gameObject));
+    }
+
+    private void UpdateSavingTextColor(float val)
+    {
+        Color32 newColor = savingText.color;
+        newColor.r = (byte)(((1f - val) * savingTextStartColor.r) + (val * savingTextEndColor.r));
+        newColor.b = (byte)(((1f - val) * savingTextStartColor.b) + (val * savingTextEndColor.b));
+        newColor.g = (byte)(((1f - val) * savingTextStartColor.g) + (val * savingTextEndColor.g));
+        newColor.a = (byte)(((1f - val) * savingTextStartColor.a) + (val * savingTextEndColor.a));
+        savingText.color = newColor;
+    }
+
+    private void SetToCanSaveAgain()
+    {
+        canSave = true;
     }
 
     private void TranslateItemsToInt(List<int> intItemList, List<PocketMonsterItem> actualItemList, List<PocketMonsterItem> itemListToSearchThrough)
@@ -1911,6 +2000,14 @@ public class GameManager : MonoBehaviour
         for (int i = 0; i < allTeamBuffs.Count; i++)
         {
             allTeamBuffs[i].SetStats();
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if (playerBattle != null)
+        {
+            Destroy(playerBattle.gameObject);
         }
     }
 }

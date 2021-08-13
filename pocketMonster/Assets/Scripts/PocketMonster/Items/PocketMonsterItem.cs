@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PocketMonsterItem
 {
-    public bool onSwitch = false, everyTurn = false, attackTurn = false, defenseTurn = false, endOfAttackTurn = false;
+    public bool onSwitch = false, everyTurn = false, attackTurn = false, defenseTurn = false, endOfAttackTurn = false, endOfDamageCalc = false;
 
     public string name = "", itemDescription = "", startOfBattleMessage = "";
 
@@ -37,6 +37,12 @@ public class PocketMonsterItem
 
     public virtual void GrantAttackTurnEffect(PocketMonster effectedPocketMonster, PocketMonsterMoves move,
         PocketMonster opponentPocketMonster, InBattleTextManager inBattleTextManager)
+    {
+
+    }
+
+    public virtual void GrantEndOfDamageCalcEffect(PocketMonster effectedPocketMonster, PocketMonsterMoves move,
+    PocketMonster opponentPocketMonster, InBattleTextManager inBattleTextManager, bool defenseTurn)
     {
 
     }

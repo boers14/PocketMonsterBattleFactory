@@ -50,7 +50,7 @@ public static class SaveSytem
         }
         else
         {
-            Debug.LogError("No file found");
+            Debug.Log("No file found");
         }
     }
 

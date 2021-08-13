@@ -43,4 +43,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9a9cb9260f9812a45b2b525db4f881ee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  teamsCreated: 0
+  amountOfPocketMonsters: 1
+  amountOfMoves: 1
+  amountOfItems: 0
+  currentIntelligence: 0
+  addMove: 0
   amountOfTeamBuffs: 0

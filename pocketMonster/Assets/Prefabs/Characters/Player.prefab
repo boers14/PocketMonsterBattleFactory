@@ -128,7 +128,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   walkSpeed: 10
-  rotationSpeed: 1.5
+  rotationSpeed: 0.2
   gravity: 0.5
   sprintSpeed: 15
 --- !u!114 &-8015359346494681308
@@ -173,6 +173,7 @@ MonoBehaviour:
   lightSprite: {fileID: 21300000, guid: 0c22475ec047a924e93df451ca4a0176, type: 3}
   regularSprite: {fileID: 21300000, guid: d2cbbe8ca29e69e479ae482d5dde6814, type: 3}
   windSprite: {fileID: 21300000, guid: 4c9ee08e621dbb6478c1c226d173f125, type: 3}
+  noTypeSprite: {fileID: 21300000, guid: 44f1edbc9f9eed6448e0cc534b9a64ba, type: 3}
   chemicalMat: {fileID: 2100000, guid: bc7da62df2402f645b3de22473f73531, type: 2}
   staticMat: {fileID: 2100000, guid: f46f64a8b55e8814c88b6a6ed439e0a7, type: 2}
   waterMat: {fileID: 2100000, guid: 25cc2e46c100a434bb08083c4493e1ac, type: 2}
@@ -183,6 +184,7 @@ MonoBehaviour:
   lightMat: {fileID: 2100000, guid: c5e874de6734f6240a45b5c299b0e989, type: 2}
   regularMat: {fileID: 2100000, guid: ebc1f36be70d6854a9871e1648668d53, type: 2}
   windMat: {fileID: 2100000, guid: 0348ad2cba2edd14db080abe589fef0c, type: 2}
+  noTypeMat: {fileID: 2100000, guid: fcd657a5040ed72428db6323153f438a, type: 2}
 --- !u!114 &-6619782767856353307
 MonoBehaviour:
   m_ObjectHideFlags: 0

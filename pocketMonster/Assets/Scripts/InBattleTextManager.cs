@@ -264,7 +264,7 @@ public class InBattleTextManager : MonoBehaviour
                 }
                 else if (player.isInAbilityMenu)
                 {
-                    player.enableAbilityMenu(true);
+                    player.EnableAbilityMenu(true);
                 }
                 else
                 {

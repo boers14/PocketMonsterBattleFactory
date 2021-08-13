@@ -9,11 +9,15 @@ public class EnemyManager : MonoBehaviour
 
     public List<PocketMonsterItem> teamBuffsOfAi = new List<PocketMonsterItem>();
 
+    [System.NonSerialized]
     public int teamsCreated = 0, amountOfPocketMonsters = 1, amountOfMoves = 1, amountOfItems = 0, currentIntelligence = 0;
 
+    [System.NonSerialized]
     public bool addMove = false;
+
     private bool addSameMoveTypes = false;
 
+    [System.NonSerialized]
     public int amountOfTeamBuffs = 0;
 
     private enum MovesToGive

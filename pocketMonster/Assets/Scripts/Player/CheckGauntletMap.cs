@@ -27,7 +27,7 @@ public class CheckGauntletMap : MonoBehaviour
 
     private Vector3 prevMousePos = Vector3.zero;
 
-    private int startLenghtOfRun = 2;
+    private int startLenghtOfRun = 2, lenghtOfGauntlet = 2, lastKnownIndex = 0;
     private float scrollPoints = 0;
 
     bool mapIsActive = false;
@@ -43,7 +43,6 @@ public class CheckGauntletMap : MonoBehaviour
     private Color32 pocketMonsterColor = Color.yellow, itemColor = Color.blue, moveColor = Color.magenta, teamBuffColor = Color.white,
         finalBattleColor = Color.red;
 
-    // Update is called once per frame
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.V))
@@ -89,23 +88,17 @@ public class CheckGauntletMap : MonoBehaviour
     {
         for (int i = 0; i < terrainPieces.Count; i++)
         {
-            Vector3 newPos = terrainPieces[i].GetComponent<RectTransform>().localPosition;
-            newPos.y -= movement;
-            terrainPieces[i].GetComponent<RectTransform>().localPosition = newPos;
+            MoveImage(terrainPieces[i], movement);
         }
 
         for (int i = 0; i < icons.Count; i++)
         {
-            Vector3 newPos = icons[i].GetComponent<RectTransform>().localPosition;
-            newPos.y -= movement;
-            icons[i].GetComponent<RectTransform>().localPosition = newPos;
+            MoveImage(icons[i], movement);
         }
 
         for (int i = 0; i < connections.Count; i++)
         {
-            Vector3 newPos = connections[i].GetComponent<RectTransform>().localPosition;
-            newPos.y -= movement;
-            connections[i].GetComponent<RectTransform>().localPosition = newPos;
+            MoveImage(connections[i], movement);
         }
 
         for (int i = 0; i < information.Count; i++)
@@ -115,6 +108,13 @@ public class CheckGauntletMap : MonoBehaviour
             information[i].GetComponent<RectTransform>().localPosition = newPos;
             information[i].GetComponent<HoverableUiElement>().PointerExit();
         }
+    }
+
+    private void MoveImage(Image mapPiece, float movement)
+    {
+        Vector3 newPos = mapPiece.rectTransform.localPosition;
+        newPos.y -= movement;
+        mapPiece.rectTransform.localPosition = newPos;
     }
 
     private void CreateMap()
@@ -135,17 +135,25 @@ public class CheckGauntletMap : MonoBehaviour
 
         if (terrainManager.whatToSpawn == TerrainManager.MapChunksToSpawn.StartOfMap || terrainManager.whatToSpawn == TerrainManager.MapChunksToSpawn.SecondPocketMonster)
         {
+            ResetMapBasedOnMapChunk(1);
             CreateStartOfMap(canvas);
         } else if (terrainManager.whatToSpawn == TerrainManager.MapChunksToSpawn.FirstMoveSelection || terrainManager.whatToSpawn == TerrainManager.MapChunksToSpawn.SecondMoveSelection ||
             terrainManager.whatToSpawn == TerrainManager.MapChunksToSpawn.ThirdPocketMonster)
         {
+            ResetMapBasedOnMapChunk(2);
             CreateSmallGauntlet(canvas);
         } else if (terrainManager.whatToSpawn == TerrainManager.MapChunksToSpawn.LastBattle)
         {
-            scrollPoints = 0;
+            ResetMapBasedOnMapChunk(4);
             CreateEndGame(canvas);
         } else
         {
+            if (lenghtOfGauntlet != terrainManager.currentLenght || lastKnownIndex != 3)
+            {
+                scrollPoints = 0;
+                lenghtOfGauntlet = terrainManager.currentLenght;
+                lastKnownIndex = 3;
+            }
             CreateGauntlet(canvas);
         }
 
@@ -167,6 +175,15 @@ public class CheckGauntletMap : MonoBehaviour
         }
 
         MoveAllMapPieces(-scrollPoints);
+    }
+
+    private void ResetMapBasedOnMapChunk(int index)
+    {
+        if (index != lastKnownIndex)
+        {
+            scrollPoints = 0;
+            lastKnownIndex = index;
+        }
     }
 
     private void CreateStartOfMap(GameObject canvas)
@@ -862,5 +879,6 @@ public class CheckGauntletMap : MonoBehaviour
     public void SetTerrainManager(TerrainManager terrainManager)
     {
         this.terrainManager = terrainManager;
+        lenghtOfGauntlet = terrainManager.currentLenght;
     }
 }

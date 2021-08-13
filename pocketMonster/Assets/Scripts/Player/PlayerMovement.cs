@@ -15,13 +15,11 @@ public class PlayerMovement : MonoBehaviour
 
     private bool grounded = false, sprinting = false;
 
-    // Start is called before the first frame update
     void Start()
     {
         rb = GetComponent<Rigidbody>();
     }
 
-    // Update is called once per frame
     void Update()
     {
         if (Input.GetKey(KeyCode.Z))

@@ -1,10 +1,4 @@
-battle alley teleporters after saving before trainer fight
-end celebration (end screen with particle effects)
-on new gauntlet move map back to start
-particles for winning/ losing battle
-Exit game button
-visual for saving
 Give ai unfair advantage over time
-
+Make online part for game
 
 music making day with bruno?

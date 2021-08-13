@@ -14,13 +14,13 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/InfoScene.unity
     guid: a7801664a71a4474daaf264f51ce5019
-  - enabled: 0
-    path: 
-    guid: cfa67c8f3cd99b14ab8577b417cf0db8
   - enabled: 1
     path: Assets/Scenes/RunSettingsScene.unity
     guid: 73dfbb23d19c5e84d9a67cd89e24285e
   - enabled: 1
     path: Assets/Scenes/ChooseGameState.unity
     guid: 3ecf1e9f3a0e2d44eb3bd83b6765b6eb
+  - enabled: 1
+    path: Assets/Scenes/EndScreen.unity
+    guid: bcbf2b9d283c8164885016c87f4c1850
   m_configObjects: {}

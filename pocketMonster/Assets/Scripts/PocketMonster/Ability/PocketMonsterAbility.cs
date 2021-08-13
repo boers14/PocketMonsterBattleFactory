@@ -5,7 +5,8 @@ using UnityEngine;
 public class PocketMonsterAbility : MonoBehaviour
 {
     public string abilityName, abilityDescription;
-    public bool instantEffect = false, oneTime = true, hasBeenUsed = false, onDeath = false, attackAbility = false, defenseAbility = false;
+    public bool instantEffect = false, oneTime = true, hasBeenUsed = false, onDeath = false, attackAbility = false, defenseAbility = false, 
+        endOfDamageCalc = false;
     public PlayerBattle player;
 
     public virtual void SetAbilityStats(PlayerBattle player)
@@ -28,6 +29,12 @@ public class PocketMonsterAbility : MonoBehaviour
     InBattleTextManager inBattleTextManager)
     {
 
+    }
+
+    public virtual void UseEndOfDamageCalcAbility(PocketMonster ownPocketMonster, PocketMonster opponentPocketMonster, PocketMonsterMoves move,
+        InBattleTextManager inBattleTextManager)
+    {
+        endOfDamageCalc = false;
     }
 
     public virtual void UseAbilityAftermath(PocketMonster ownPocketMonster, PocketMonster opponentPocketMonster, InBattleTextManager inBattleTextManager)

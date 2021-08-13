@@ -17,7 +17,20 @@ public class DamageReflector : PocketMonsterAbility
     public override void UseInAttackAbility(PocketMonster ownPocketMonster, PocketMonster opponentPocketMonster, PocketMonsterMoves move,
         InBattleTextManager inBattleTextManager)
     {
-        float damageTaken = Mathf.Ceil(ownPocketMonster.amountOfDamageTaken / 2);
+        endOfDamageCalc = true;
+    }
+
+    public override void UseEndOfDamageCalcAbility(PocketMonster ownPocketMonster, PocketMonster opponentPocketMonster, PocketMonsterMoves move, InBattleTextManager inBattleTextManager)
+    {
+        base.UseEndOfDamageCalcAbility(ownPocketMonster, opponentPocketMonster, move, inBattleTextManager);
+        float damageTaken = ownPocketMonster.amountOfDamageTaken / 2;
+
+        if (damageTaken >= ownPocketMonster.health)
+        {
+            damageTaken = ownPocketMonster.health;
+        }
+
+        damageTaken = Mathf.Ceil(damageTaken);
 
         if (damageTaken > opponentPocketMonster.health)
         {
@@ -38,7 +51,8 @@ public class DamageReflector : PocketMonsterAbility
             {
                 inBattleTextManager.QueMessage(message, false, true, true, false);
             }
-        } else
+        }
+        else
         {
             inBattleTextManager.QueMessage(message, false, false, false, false);
         }

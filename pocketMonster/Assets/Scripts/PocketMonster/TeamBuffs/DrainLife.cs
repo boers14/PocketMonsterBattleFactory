@@ -5,16 +5,22 @@ using UnityEngine;
 public class DrainLife : PocketMonsterItem
 {
     private PlayerBattle playerBattle;
+
     public override void SetStats()
     {
-        attackTurn = true;
+        endOfDamageCalc = true;
         name = "Drain life";
         itemDescription = "Heals for 33% of the damage dealt.";
     }
 
-    public override void GrantAttackTurnEffect(PocketMonster effectedPocketMonster, PocketMonsterMoves move,
-        PocketMonster opponentPocketmonster, InBattleTextManager inBattleTextManager)
+    public override void GrantEndOfDamageCalcEffect(PocketMonster effectedPocketMonster, PocketMonsterMoves move, PocketMonster opponentPocketMonster,
+        InBattleTextManager inBattleTextManager, bool defenseTurn)
     {
+        if (!defenseTurn)
+        {
+            return;
+        }
+
         if (playerBattle == null)
         {
             GameObject player = GameObject.FindGameObjectsWithTag("Player")[0];
@@ -23,12 +29,12 @@ public class DrainLife : PocketMonsterItem
 
         if (effectedPocketMonster.health < effectedPocketMonster.stats.maxHealth && !effectedPocketMonster.fainted)
         {
-            float damageDone = opponentPocketmonster.amountOfDamageTaken;
+            float damageDone = opponentPocketMonster.amountOfDamageTaken;
             if (damageDone != 0)
             {
-                if (damageDone > opponentPocketmonster.health)
+                if (damageDone > opponentPocketMonster.health)
                 {
-                    damageDone = opponentPocketmonster.health;
+                    damageDone = opponentPocketMonster.health;
                 }
 
                 float regainedHealth = damageDone * 0.33f;
@@ -39,16 +45,19 @@ public class DrainLife : PocketMonsterItem
                     regainedHealth -= effectedPocketMonster.health - effectedPocketMonster.stats.maxHealth;
                     effectedPocketMonster.health = effectedPocketMonster.stats.maxHealth;
                 }
-                string message = effectedPocketMonster.stats.name + " got " + (int)regainedHealth + " health back from the attack from the " + name + ".";
+                string message = effectedPocketMonster.stats.name + " got " + (int)regainedHealth + " health back from the attack from the " +
+                    name + ".";
 
                 if (playerBattle.pocketMonsters.Contains(effectedPocketMonster))
                 {
                     inBattleTextManager.QueMessage(message, false, true, false, false);
-                } else
+                }
+                else
                 {
                     inBattleTextManager.QueMessage(message, true, false, false, false);
                 }
             }
+
         }
     }
 }

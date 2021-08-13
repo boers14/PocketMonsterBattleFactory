@@ -33,7 +33,7 @@ public class TerrainManager : MonoBehaviour
 
     public MapChunksToSpawn whatToSpawn = MapChunksToSpawn.StartOfMap, currentMapChunk = MapChunksToSpawn.StartOfMap;
 
-    public LandingTeleporter.SpawnPosition path = LandingTeleporter.SpawnPosition.Middle;
+    public LandingTeleporter.SpawnPosition path = LandingTeleporter.SpawnPosition.Middle, prevPath = LandingTeleporter.SpawnPosition.Middle;
 
     public Vector3 nextChunkPos = Vector3.zero;
 
@@ -44,15 +44,20 @@ public class TerrainManager : MonoBehaviour
     private void Start()
     {
         GameObject runSettingManager = GameObject.FindGameObjectWithTag("RunSettingsManager");
-        if (runSettingManager != null)
+        if (!gameManager.loadedData)
         {
-            lengthOfRun = runSettingManager.GetComponent<RunSettingsManager>().lenghtOfRun;
-        } else
-        {
-            lengthOfRun = 6;
-        }
 
-        Destroy(runSettingManager);
+            if (runSettingManager != null)
+            {
+                lengthOfRun = runSettingManager.GetComponent<RunSettingsManager>().lenghtOfRun;
+            }
+            else
+            {
+                lengthOfRun = 6;
+            }
+
+            Destroy(runSettingManager);
+        }
 
         GameObject arena = Instantiate(battleArena);
         arena.transform.position = arenaPos;
@@ -62,7 +67,7 @@ public class TerrainManager : MonoBehaviour
     {
         int amount = 0;
 
-        for (int i = currentLenght; i <= lengthOfRun; i++)
+        for (int i = currentLenght; i <= lengthOfRun + 1; i++)
         {
             amount += i;
         }
@@ -96,8 +101,9 @@ public class TerrainManager : MonoBehaviour
 
     public List<LandingTeleporter> DecideNextSpawnOfMap(LandingTeleporter.SpawnPosition direction)
     {
-        List<LandingTeleporter> landingTeleporters = new List<LandingTeleporter>();
+        prevPath = path;
 
+        List<LandingTeleporter> landingTeleporters = new List<LandingTeleporter>();
         switch (whatToSpawn)
         {
             case MapChunksToSpawn.StartOfMap:
@@ -120,10 +126,10 @@ public class TerrainManager : MonoBehaviour
                 landingTeleporters = CreateStartOfGauntlet(landingTeleporters, direction, true);
                 break;
             case MapChunksToSpawn.MidGauntlet:
-                landingTeleporters = CreateMidGuantlet(landingTeleporters, direction, true);
+                landingTeleporters = CreateMidGuantlet(landingTeleporters, direction, true, path);
                 break;
             case MapChunksToSpawn.EndOfGuantlet:
-                landingTeleporters = CreateEndGuantlet(landingTeleporters, direction, true);
+                landingTeleporters = CreateEndGuantlet(landingTeleporters, direction, true, path);
                 break;
             case MapChunksToSpawn.BigItemRound:
                 landingTeleporters = CreateBigItemRound(landingTeleporters, direction, true);
@@ -357,7 +363,7 @@ public class TerrainManager : MonoBehaviour
     }
 
     private List<LandingTeleporter> CreateMidGuantlet(List<LandingTeleporter> landingTeleporters, 
-        LandingTeleporter.SpawnPosition direction, bool createBattleAlley)
+        LandingTeleporter.SpawnPosition direction, bool createBattleAlley, LandingTeleporter.SpawnPosition path)
     {
         ClearTerrainPieces(true);
         List<GameObject> teleporters = new List<GameObject>();
@@ -388,14 +394,14 @@ public class TerrainManager : MonoBehaviour
         for (int i = 0; i < arrivalTeleporters.Count; i++)
         {
             LandingTeleporter.SpawnPosition neededSpawnPos = GauntletTeleporterPosDecision(direction,
-                arrivalTeleporters[i].GetComponent<LandingTeleporter>().spawnPosition, arrivalTeleporters[i].GetComponent<LandingTeleporter>().chunkIndex);
+                arrivalTeleporters[i].GetComponent<LandingTeleporter>().spawnPosition, arrivalTeleporters[i].GetComponent<LandingTeleporter>().chunkIndex, path);
             arrivalTeleporters[i].GetComponent<LandingTeleporter>().spawnPosition = neededSpawnPos;
             landingTeleporters.Add(arrivalTeleporters[i].GetComponent<LandingTeleporter>());
             landingTeleporters.Add(arrivalTeleporters[i].GetComponent<LandingTeleporter>());
         }
 
         LandingTeleporter.SpawnPosition neededDirection = DecideDirection(direction);
-        path = neededDirection;
+        this.path = neededDirection;
 
         if (createBattleAlley)
         {
@@ -416,7 +422,7 @@ public class TerrainManager : MonoBehaviour
     }
 
     private List<LandingTeleporter> CreateEndGuantlet(List<LandingTeleporter> landingTeleporters, 
-        LandingTeleporter.SpawnPosition direction, bool createBattleAlley)
+        LandingTeleporter.SpawnPosition direction, bool createBattleAlley, LandingTeleporter.SpawnPosition path)
     {
         ClearTerrainPieces(true);
         List<GameObject> teleporters = new List<GameObject>();
@@ -463,14 +469,15 @@ public class TerrainManager : MonoBehaviour
         for (int i = 0; i < arrivalTeleporters.Count; i++)
         {
             LandingTeleporter.SpawnPosition neededSpawnPos = GauntletTeleporterPosDecision(direction,
-                arrivalTeleporters[i].GetComponent<LandingTeleporter>().spawnPosition, arrivalTeleporters[i].GetComponent<LandingTeleporter>().chunkIndex);
+                arrivalTeleporters[i].GetComponent<LandingTeleporter>().spawnPosition, arrivalTeleporters[i].GetComponent<LandingTeleporter>().chunkIndex,
+                path);
             arrivalTeleporters[i].GetComponent<LandingTeleporter>().spawnPosition = neededSpawnPos;
             landingTeleporters.Add(arrivalTeleporters[i].GetComponent<LandingTeleporter>());
             landingTeleporters.Add(arrivalTeleporters[i].GetComponent<LandingTeleporter>());
         }
 
         LandingTeleporter.SpawnPosition neededDirection = DecideDirection(direction);
-        path = neededDirection;
+        this.path = neededDirection;
 
         if (createBattleAlley)
         {
@@ -693,7 +700,7 @@ public class TerrainManager : MonoBehaviour
     }
 
     private LandingTeleporter.SpawnPosition GauntletTeleporterPosDecision(LandingTeleporter.SpawnPosition direction,
-    LandingTeleporter.SpawnPosition current, int index)
+    LandingTeleporter.SpawnPosition current, int index, LandingTeleporter.SpawnPosition path)
     {
         LandingTeleporter.SpawnPosition neededPos = LandingTeleporter.SpawnPosition.OutOfReach;
 
@@ -865,12 +872,15 @@ public class TerrainManager : MonoBehaviour
         currentMapChunk = (MapChunksToSpawn)System.Enum.Parse(typeof(MapChunksToSpawn), data.currentMapChunk);
         whatToSpawn = (MapChunksToSpawn)System.Enum.Parse(typeof(MapChunksToSpawn), data.whatToSpawn);
         path = (LandingTeleporter.SpawnPosition)System.Enum.Parse(typeof(LandingTeleporter.SpawnPosition), data.path);
+        prevPath = (LandingTeleporter.SpawnPosition)System.Enum.Parse(typeof(LandingTeleporter.SpawnPosition), data.prevPath);
 
         nextChunkPos.x = data.nextChunkPos[0];
         nextChunkPos.y = data.nextChunkPos[1];
         nextChunkPos.z = data.nextChunkPos[2];
 
         List<LandingTeleporter> landingTeleporters = new List<LandingTeleporter>();
+        LandingTeleporter.SpawnPosition spawnPosition = (LandingTeleporter.SpawnPosition)System.Enum.Parse(typeof
+            (LandingTeleporter.SpawnPosition), data.teleporterSpawnPos);
 
         switch (currentMapChunk)
         {
@@ -878,36 +888,38 @@ public class TerrainManager : MonoBehaviour
                 SpawnStartOfMap(false);
                 break;
             case MapChunksToSpawn.SecondPocketMonster:
-                landingTeleporters = CreateFirstStop(landingTeleporters, path, false);
+                landingTeleporters = CreateFirstStop(landingTeleporters, spawnPosition, false);
                 break;
             case MapChunksToSpawn.FirstMoveSelection:
-                landingTeleporters = CreateFirstMoveSelection(landingTeleporters, path, false);
+                landingTeleporters = CreateFirstMoveSelection(landingTeleporters, spawnPosition, false);
                 break;
             case MapChunksToSpawn.SecondMoveSelection:
-                landingTeleporters = CreateSecondMoveSelection(landingTeleporters, path, false);
+                landingTeleporters = CreateSecondMoveSelection(landingTeleporters, spawnPosition, false);
                 break;
             case MapChunksToSpawn.ThirdPocketMonster:
-                landingTeleporters = CreateThirdPocketMonsterSelection(landingTeleporters, path, false);
+                landingTeleporters = CreateThirdPocketMonsterSelection(landingTeleporters, spawnPosition, false);
                 break;
             case MapChunksToSpawn.StartOfGauntlet:
-                landingTeleporters = CreateStartOfGauntlet(landingTeleporters, path, false);
+                landingTeleporters = CreateStartOfGauntlet(landingTeleporters, spawnPosition, false);
                 break;
             case MapChunksToSpawn.MidGauntlet:
-                landingTeleporters = CreateMidGuantlet(landingTeleporters, path, false);
+                landingTeleporters = CreateMidGuantlet(landingTeleporters, spawnPosition, false, prevPath);
                 break;
             case MapChunksToSpawn.EndOfGuantlet:
-                landingTeleporters = CreateEndGuantlet(landingTeleporters, path, false);
+                landingTeleporters = CreateEndGuantlet(landingTeleporters, spawnPosition, false, prevPath);
                 break;
             case MapChunksToSpawn.BigItemRound:
-                landingTeleporters = CreateBigItemRound(landingTeleporters, path, false);
+                landingTeleporters = CreateBigItemRound(landingTeleporters, spawnPosition, false);
                 break;
             case MapChunksToSpawn.EndOfGame:
-                landingTeleporters = CreateEndOfGame(landingTeleporters, path, false, data.mergantPosses.Count);
+                landingTeleporters = CreateEndOfGame(landingTeleporters, spawnPosition, false, data.mergantPosses.Count);
                 break;
             default:
                 print("No map pieces found to spawn");
                 break;
         }
+
+        path = (LandingTeleporter.SpawnPosition)System.Enum.Parse(typeof(LandingTeleporter.SpawnPosition), data.path);
 
         List<GameObject> teleporters = new List<GameObject>();
 
@@ -938,8 +950,6 @@ public class TerrainManager : MonoBehaviour
                 List<GameObject> battleLandingTeleporter = new List<GameObject>();
                 GetAllTeleporters(battleSpot, battleLandingTeleporter, "LandingTeleporter");
 
-                LandingTeleporter.SpawnPosition spawnPosition = (LandingTeleporter.SpawnPosition)System.Enum.Parse(typeof
-                    (LandingTeleporter.SpawnPosition), data.teleporterSpawnPos);
                 for (int j = 0; j < landingTeleporters.Count; j++)
                 {
                     if (landingTeleporters[j].spawnPosition == spawnPosition)

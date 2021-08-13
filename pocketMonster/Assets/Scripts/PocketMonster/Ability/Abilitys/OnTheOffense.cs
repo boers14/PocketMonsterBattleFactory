@@ -28,7 +28,12 @@ public class OnTheOffense : PocketMonsterAbility
     public override void UseTheirTurnAbility(PocketMonster ownPocketMonster, PocketMonster opponentPocketMonster, PocketMonsterMoves move, InBattleTextManager inBattleTextManager)
     {
         ownPocketMonster.abilityOnTheirTurn = true;
+        endOfDamageCalc = true;
+    }
 
+    public override void UseEndOfDamageCalcAbility(PocketMonster ownPocketMonster, PocketMonster opponentPocketMonster, PocketMonsterMoves move, InBattleTextManager inBattleTextManager)
+    {
+        base.UseEndOfDamageCalcAbility(ownPocketMonster, opponentPocketMonster, move, inBattleTextManager);
         if (opponentPocketMonster.amountOfDamageTaken > 0)
         {
             if (opponentPocketMonster.amountOfDamageTaken > opponentPocketMonster.health)

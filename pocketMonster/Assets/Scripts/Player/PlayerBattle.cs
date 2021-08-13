@@ -34,15 +34,22 @@ public class PlayerBattle : MonoBehaviour
 
     public List<List<PocketMonsterMoves>> pocketMonsterMoves = new List<List<PocketMonsterMoves>>();
 
+    public List<List<PocketMonsterItem>> pocketMonsterItems = new List<List<PocketMonsterItem>>();
+
     public PocketMonsterTextUpdate playerUpdate, aiUpdate;
 
     private int coloredTextPlayerCounter = 0, coloredTextAiCounter = 0;
 
     public Sprite chemicalSprite = null, staticSprite = null, waterSprite = null, grassSprite = null, fireSprite = null,
-        spookySprite = null, earthSprite = null, lightSprite = null, regularSprite = null, windSprite = null;
+        spookySprite = null, earthSprite = null, lightSprite = null, regularSprite = null, windSprite = null, noTypeSprite = null;
 
     public Material chemicalMat = null, staticMat = null, waterMat = null, grassMat = null, fireMat = null,
-        spookyMat = null, earthMat = null, lightMat, regularMat = null, windMat = null;
+        spookyMat = null, earthMat = null, lightMat, regularMat = null, windMat = null, noTypeMat = null;
+
+    [System.NonSerialized]
+    public ParticleSystem winParticleSystem = null, lostParticleSystem = null;
+
+    private Canvas canvas = null;
 
     private void Update()
     {
@@ -68,6 +75,7 @@ public class PlayerBattle : MonoBehaviour
         }
 
         pocketMonsterMoves.Clear();
+        pocketMonsterItems.Clear();
 
         for (int i = 0; i < pocketMonsters.Count; i++)
         {
@@ -94,6 +102,15 @@ public class PlayerBattle : MonoBehaviour
             }
             pocketMonsterMoves.Add(savedMoves);
 
+            List<PocketMonsterItem> savedItems = new List<PocketMonsterItem>();
+            for (int j = 0; j < newPocketMonster.items.Count; j++)
+            {
+                PocketMonsterItem itemToSave = (PocketMonsterItem)System.Activator.CreateInstance(newPocketMonster.items[j].GetType());
+                itemToSave.SetStats();
+                savedItems.Add(itemToSave);
+            }
+            pocketMonsterItems.Add(savedItems);
+
             newPocketMonster.gameObject.SetActive(false);
             pocketMonsters.Add(newPocketMonster);
             pocketMonsters[i].ResetHealth();
@@ -108,14 +125,17 @@ public class PlayerBattle : MonoBehaviour
 
     public void CreateUI()
     {
-        GameObject canvas = GameObject.Find("Canvas");
+        if (canvas == null)
+        {
+            canvas = GameObject.Find("Canvas").GetComponent<Canvas>();
+        }
 
         CreateOwnPocketMosterUI();
 
         Text newInfo = Instantiate(prefabText);
         newInfo.color = Color.white;
         pocketMonsterInformation = newInfo;
-        SetUIPosition(pocketMonsterInformation.gameObject, 4, 2.5f, 2, 2, 1, 1);
+        SetUIStats.SetUIPosition(canvas, pocketMonsterInformation.gameObject, 4, 2.5f, 2, 2, 1, 1);
 
         pocketMonsterAbilityText = InstantiateAbilityText(canvas, pocketMonsterInformation, true, currentPocketMonster);
 
@@ -140,14 +160,14 @@ public class PlayerBattle : MonoBehaviour
             newButton.GetComponent<HoverableUiElement>().SetText(SetInformation(pocketMonsters[i], pocketMonsters[i].health.ToString(),
                 "Pocketmonster" + (i + 1), true, pocketMonsters[i].currentStatus, true, false, true, true));
             SetSwitchButtonOnClick(i);
-            SetUIPosition(newButton.gameObject, 4, 12, 2, 0, 1, 1, i, true, false);
+            SetUIStats.SetUIPosition(canvas, newButton.gameObject, 4, 12, 2, 0, 1, 1, i, true, false);
         }
 
         Text opponentInfo = Instantiate(prefabText);
         opponentInfo.color = Color.white;
         opponentInfo.alignment = TextAnchor.UpperRight;
         opponentPocketMonsterInformation = opponentInfo;
-        SetUIPosition(opponentPocketMonsterInformation.gameObject, 4, 2.5f, 2, 2, 1, -1);
+        SetUIStats.SetUIPosition(canvas, opponentPocketMonsterInformation.gameObject, 4, 2.5f, 2, 2, 1, -1);
 
         opponentPocketMonsterAbilityText = InstantiateAbilityText(canvas, opponentPocketMonsterInformation, false, opponentPocketMonster);
 
@@ -179,7 +199,7 @@ public class PlayerBattle : MonoBehaviour
         Text abilityText = Instantiate(prefabText);
         abilityText.color = Color.white;
         askAbilityText = abilityText;
-        SetUIPosition(askAbilityText.gameObject, 3, 6, 0, 2, 1, 1);
+        SetUIStats.SetUIPosition(canvas, askAbilityText.gameObject, 3, 6, 0, 2, 1, 1);
 
         for (int i = 0; i < 2; i++)
         {
@@ -195,19 +215,19 @@ public class PlayerBattle : MonoBehaviour
             }
 
             SetUseAbilityOnClick(i);
-            SetUIPosition(newButton.gameObject, 2, 8, 2, 2, -1, 1, i, false, true);
+            SetUIStats.SetUIPosition(canvas, newButton.gameObject, 2, 8, 2, 2, -1, 1, i, false, true);
         }
         
 
         if (!currentPocketMonster.ability.onDeath)
         {
-            enableAbilityMenu(true);
+            EnableAbilityMenu(true);
         } else
         {
             opponentTrainer.UseAbilityForPocketMonster(this, currentPocketMonster);
             currentPocketmonsterIsFainted = false;
             opponentTrainer.firstTurn = false;
-            enableAbilityMenu(false);
+            EnableAbilityMenu(false);
         }
     }
 
@@ -263,10 +283,10 @@ public class PlayerBattle : MonoBehaviour
             opponentTrainer.firstTurn = false;
         }
 
-        enableAbilityMenu(false);
+        EnableAbilityMenu(false);
     }
 
-    public void enableAbilityMenu(bool enabled)
+    public void EnableAbilityMenu(bool enabled)
     {
         if (enabled)
         {
@@ -363,7 +383,7 @@ public class PlayerBattle : MonoBehaviour
 
                 if (!currentPocketMonster.ability.hasBeenUsed && !currentPocketMonster.ability.onDeath)
                 {
-                    enableAbilityMenu(true);
+                    EnableAbilityMenu(true);
                 }
                 else
                 {
@@ -435,6 +455,11 @@ public class PlayerBattle : MonoBehaviour
             return;
         }
 
+        if (canvas == null)
+        {
+            canvas = GameObject.Find("Canvas").GetComponent<Canvas>();
+        }
+
         for (int i = 0; i < actionButtons.Count; i++)
         {
             Destroy(actionButtons[i].gameObject);
@@ -447,7 +472,7 @@ public class PlayerBattle : MonoBehaviour
             actionButtons.Add(newButton);
             SetButtonText(i);
 
-            SetUIPosition(newButton.gameObject, currentPocketMonster.moves.Count, 8, 2, 2, -1, 1, i, false, true);
+            SetUIStats.SetUIPosition(canvas, newButton.gameObject, currentPocketMonster.moves.Count, 8, 2, 2, -1, 1, i, false, true);
 
             SetMoveButtonOnClick(i);
         }
@@ -549,6 +574,11 @@ public class PlayerBattle : MonoBehaviour
                 sprite = lightSprite;
                 break;
             case PocketMonsterStats.Typing.None:
+                colors.normalColor = new Color32(120, 120, 120, 255);
+                colors.highlightedColor = new Color32(100, 100, 100, 255);
+                colors.pressedColor = new Color32(80, 80, 80, 255);
+                colors.selectedColor = new Color32(80, 80, 80, 255);
+                sprite = noTypeSprite;
                 break;
             case PocketMonsterStats.Typing.Regular:
                 sprite = regularSprite;
@@ -1121,7 +1151,7 @@ public class PlayerBattle : MonoBehaviour
         ClearUI();
         Text victoryText = Instantiate(prefabText);
         endOfBattleText = victoryText;
-        SetUIPosition(endOfBattleText.gameObject, 2, 6, 0, 0, 1, 1);
+        SetUIStats.SetUIPosition(canvas, endOfBattleText.gameObject, 2, 6, 0, 0, 1, 1);
         endOfBattleText.resizeTextMaxSize = 70;
         endOfBattleText.alignment = TextAnchor.MiddleCenter;
         string defeatText = "Defeat";
@@ -1130,14 +1160,18 @@ public class PlayerBattle : MonoBehaviour
         {
             endOfBattleText.text = "Victory";
             endOfBattleText.color = Color.green;
+            winParticleSystem.Play();
+            winParticleSystem.transform.rotation = transform.rotation;
         }
         else
         {
             endOfBattleText.text = defeatText;
             endOfBattleText.color = Color.red;
+            lostParticleSystem.Play();
+            lostParticleSystem.transform.rotation = transform.rotation;
         }
 
-        yield return new WaitForSeconds(1);
+        yield return new WaitForSeconds(2);
 
         Destroy(endOfBattleText.gameObject);
     }
@@ -1156,8 +1190,13 @@ public class PlayerBattle : MonoBehaviour
         return pocketMonsterTextUpdate;
     }
 
-    private Text InstantiateAbilityText(GameObject canvas, Text information, bool left, PocketMonster pocketMonster)
+    private Text InstantiateAbilityText(Canvas canvas, Text information, bool left, PocketMonster pocketMonster)
     {
+        if (canvas == null)
+        {
+            canvas = GameObject.Find("Canvas").GetComponent<Canvas>();
+        }
+
         Text abilityText = Instantiate(hoverText);
         abilityText.transform.SetParent(canvas.transform);
         abilityText.rectTransform.sizeDelta = new Vector2(information.rectTransform.sizeDelta.x, information.rectTransform.sizeDelta.y / 6);
@@ -1177,52 +1216,6 @@ public class PlayerBattle : MonoBehaviour
         abilityText.GetComponent<HoverableUiElement>().SetText(pocketMonster.chosenAbility.abilityDescription);
 
         return abilityText;
-    }
-
-    public void SetUIPosition(GameObject uiObject, float xSize, float ySize, float xPos, float yPos, float yPlacement, float xPlacement,
-        int index = 0, bool moveVertically = false, bool moveSideWard = false)
-    {
-        GameObject canvas = GameObject.Find("Canvas");
-        uiObject.transform.SetParent(canvas.transform);
-
-        Vector2 size = Vector2.zero;
-        size.y = canvas.GetComponent<RectTransform>().sizeDelta.y / ySize;
-        size.x = canvas.GetComponent<RectTransform>().sizeDelta.x / xSize;
-        uiObject.GetComponent<RectTransform>().sizeDelta = size;
-
-        Vector3 pos = Vector3.zero;
-
-        if (yPos != 0)
-        {
-            if (moveVertically)
-            {
-                pos.y = (canvas.GetComponent<RectTransform>().sizeDelta.y / yPos * yPlacement) - (size.y / 2 * yPlacement) - size.y * index;
-            }
-            else
-            {
-                pos.y = (canvas.GetComponent<RectTransform>().sizeDelta.y / yPos * yPlacement) - (size.y / 2 * yPlacement);
-            }
-        } else
-        {
-            if (moveVertically)
-            {
-                pos.y -= size.y * index;
-            }
-        }
-
-        if (xPos != 0)
-        {
-            if (moveSideWard)
-            {
-                pos.x = (-canvas.GetComponent<RectTransform>().sizeDelta.x / xPos * xPlacement) + (size.x / 2 * xPlacement) + size.x * index;
-            }
-            else
-            {
-                pos.x = (-canvas.GetComponent<RectTransform>().sizeDelta.x / xPos * xPlacement) + (size.x / 2 * xPlacement);
-            }
-        }
-
-        uiObject.GetComponent<RectTransform>().localPosition = pos;
     }
 
     private void ClearUI()

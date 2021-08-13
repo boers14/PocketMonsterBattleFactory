@@ -8,7 +8,7 @@ public class SpecialAttackBooster : PocketMonsterItem
     public override void SetStats()
     {
         onSwitch = true;
-        attackTurn = true;
+        endOfDamageCalc = true;
         name = "Special attack booster";
         itemDescription = "At start of battle increase special attack by 2 stages, but take 50% recoil on attack.";
         itemSort = ItemSort.SpecialOffense;
@@ -22,18 +22,23 @@ public class SpecialAttackBooster : PocketMonsterItem
         playerBattle = player;
     }
 
-    public override void GrantAttackTurnEffect(PocketMonster effectedPocketMonster, PocketMonsterMoves move,
-        PocketMonster opponentPocketmonster, InBattleTextManager inBattleTextManager)
+    public override void GrantEndOfDamageCalcEffect(PocketMonster effectedPocketMonster, PocketMonsterMoves move, PocketMonster opponentPocketMonster, 
+        InBattleTextManager inBattleTextManager, bool defenseTurn)
     {
-        if (move.moveSort == PocketMonsterMoves.MoveSort.Special)
+        if (!defenseTurn)
         {
-            float recoil = opponentPocketmonster.amountOfDamageTaken;
+            return;
+        }
+
+        if (move.moveSort == PocketMonsterMoves.MoveSort.Special && !effectedPocketMonster.fainted)
+        {
+            float recoil = opponentPocketMonster.amountOfDamageTaken;
 
             if (recoil > 0)
             {
-                if (recoil > opponentPocketmonster.health)
+                if (recoil > opponentPocketMonster.health)
                 {
-                    recoil = opponentPocketmonster.health;
+                    recoil = opponentPocketMonster.health;
                 }
 
                 effectedPocketMonster.health -= Mathf.Ceil(recoil * 0.5f);
