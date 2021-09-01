@@ -12,6 +12,12 @@ TagManager:
   - TerrainManager
   - EnvironmentObject
   - LoadObject
+  - TeamCreator
+  - NetworkManager
+  - PlayerConnection
+  - PocketMonster
+  - InBattleTextManager
+  - OpponentPlayer
   layers:
   - Default
   - TransparentFX

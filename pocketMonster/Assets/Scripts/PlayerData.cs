@@ -21,6 +21,7 @@ public class PlayerData
     // Enemy manager
     public int teamsCreated, amountOfPocketMonsters, amountOfMoves, amountOfItems, currentIntelligence, amountOfTeamBuffs;
     public bool addMove = false;
+    public string movesToGive = "";
 
     // Terrain manager
     public int lengthOfRun, currentLenght, currentPlaceInGuantlet;
@@ -72,6 +73,7 @@ public class PlayerData
         currentIntelligence = enemyManager.currentIntelligence;
         amountOfTeamBuffs = enemyManager.amountOfTeamBuffs;
         addMove = enemyManager.addMove;
+        movesToGive = enemyManager.movesToGive.ToString();
 
         // Terrain manager
         lengthOfRun = terrainManager.lengthOfRun;

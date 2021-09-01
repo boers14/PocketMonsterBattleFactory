@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using Mirror;
 
-public class GameManager : MonoBehaviour
+public class GameManager : NetworkBehaviour
 {
     [SerializeField]
     private GameObject playerObject = null, trainer = null, pocketMonsterGiver = null, itemGiver = null, teamBuffGiver = null, moveGiver = null, 
@@ -14,7 +15,7 @@ public class GameManager : MonoBehaviour
     private Vector3 initialPlayerPos = Vector3.zero;
 
     [System.NonSerialized]
-    public List<PocketMonster> playerPocketMonsters = new List<PocketMonster>(), aiPocketMonsters = new List<PocketMonster>();
+    public List<PocketMonster> playerPocketMonsters = new List<PocketMonster>();
     [System.NonSerialized]
     public List<PocketMonsterItem> teamBuffsOfPlayer = new List<PocketMonsterItem>();
 
@@ -105,7 +106,8 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     private string endScreenName = "";
 
-    private InBattleTextManager battleTextManager;
+    [System.NonSerialized]
+    public InBattleTextManager battleTextManager = null;
 
     private EnemyManager managerOfEnemys;
 
@@ -133,7 +135,7 @@ public class GameManager : MonoBehaviour
 
     private bool canSave = true;
 
-    void Start()
+    public virtual void Start()
     {
         if (GameObject.FindGameObjectsWithTag("GameManager").Length > 1)
         {
@@ -249,33 +251,8 @@ public class GameManager : MonoBehaviour
 
             RecoverItems(data.teamBuffsOfPlayer, teamBuffsOfPlayer, allTeamBuffs);
 
-            for (int i = 0; i < data.playerPocketMonsters.Count; i++)
-            {
-                PocketMonster addedPocketMonster = Instantiate(allPocketMonsters[data.playerPocketMonsters[i]]);
-                addedPocketMonster.SetAllStats();
-                addedPocketMonster.transform.position = new Vector3(-100, -100, -100);
-
-                addedPocketMonster.chosenAbility = addedPocketMonster.possibleAbilitys[data.playerPocketMonstersAbilitys[i]];
-                addedPocketMonster.chosenAbility.SetAbilityStats(playerBattle);
-
-                for (int j = 0; j < data.playerPocketMonsterMoves[i].Count; j++)
-                {
-                    PocketMonsterMoves moveToAdd = allPocketMonstersMoves[data.playerPocketMonsterMoves[i][j]];
-                    PocketMonsterMoves addedMove = (PocketMonsterMoves)System.Activator.CreateInstance(moveToAdd.GetType());
-                    addedMove.SetMoveStats();
-                    addedPocketMonster.moves.Add(addedMove);
-                }
-
-                for (int j = 0; j < data.playerPocketMonsterItems[i].Count; j++)
-                {
-                    PocketMonsterItem itemToAdd = allPocketMonsterItems[data.playerPocketMonsterItems[i][j]];
-                    PocketMonsterItem addedItem = (PocketMonsterItem)System.Activator.CreateInstance(itemToAdd.GetType());
-                    addedItem.SetStats();
-                    addedPocketMonster.items.Add(addedItem);
-                }
-
-                playerPocketMonsters.Add(addedPocketMonster);
-            }
+            GetPocketMonsterTeamFromIntList(playerPocketMonsters, data.playerPocketMonsters, data.playerPocketMonstersAbilitys,
+                data.playerPocketMonsterItems, data.playerPocketMonsterMoves);
 
             textMessagerInBattle.GetComponent<InBattleTextManager>().SetPlayer(playerBattle);
 
@@ -343,11 +320,43 @@ public class GameManager : MonoBehaviour
         DontDestroyOnLoad(playerBattle.gameObject);
     }
 
-    private void Update()
+    public virtual void Update()
     {
         if (Input.GetKeyDown(KeyCode.S) && !playerBattle.isInBattle && canSave)
         {
             SaveData();
+        }
+    }
+
+    public void GetPocketMonsterTeamFromIntList(List<PocketMonster> playerPocketMonsters, List<int> playerPocketMonstersInInt,
+        List<int> playerPocketMonstersAbilitysInInt, List<List<int>> playerPocketMonstersItemsInInt, List<List<int>> playerPocketMonstersMovesInInt)
+    {
+        for (int i = 0; i < playerPocketMonstersInInt.Count; i++)
+        {
+            PocketMonster addedPocketMonster = Instantiate(allPocketMonsters[playerPocketMonstersInInt[i]]);
+            addedPocketMonster.SetAllStats();
+            addedPocketMonster.transform.position = new Vector3(-100, -100, -100);
+
+            addedPocketMonster.chosenAbility = addedPocketMonster.possibleAbilitys[playerPocketMonstersAbilitysInInt[i]];
+            addedPocketMonster.chosenAbility.SetAbilityStats(playerBattle);
+
+            for (int j = 0; j < playerPocketMonstersMovesInInt[i].Count; j++)
+            {
+                PocketMonsterMoves moveToAdd = allPocketMonstersMoves[playerPocketMonstersMovesInInt[i][j]];
+                PocketMonsterMoves addedMove = (PocketMonsterMoves)System.Activator.CreateInstance(moveToAdd.GetType());
+                addedMove.SetMoveStats();
+                addedPocketMonster.moves.Add(addedMove);
+            }
+
+            for (int j = 0; j < playerPocketMonstersItemsInInt[i].Count; j++)
+            {
+                PocketMonsterItem itemToAdd = allPocketMonsterItems[playerPocketMonstersItemsInInt[i][j]];
+                PocketMonsterItem addedItem = (PocketMonsterItem)System.Activator.CreateInstance(itemToAdd.GetType());
+                addedItem.SetStats();
+                addedPocketMonster.items.Add(addedItem);
+            }
+
+            playerPocketMonsters.Add(addedPocketMonster);
         }
     }
 
@@ -1733,6 +1742,23 @@ public class GameManager : MonoBehaviour
         playerPocketMonsterItemsInInt.Clear();
         playerPocketMonsterMovesInInt.Clear();
 
+        TranslatePocketmonsterTeamToInt(playerPocketMonsters, playerPocketMonsterInInt, playerPocketMonstersAbilityInInt, playerPocketMonsterItemsInInt,
+            playerPocketMonsterMovesInInt);
+
+        TranslateItemsToInt(teamBuffsOfPlayerInInt, teamBuffsOfPlayer, allTeamBuffs);
+        TranslateMovesToInt(allMovesHandedOutInInt, allMovesHandedOut);
+        TranslateItemsToInt(itemsToHandOutInInt, itemsToHandOut, allPocketMonsterItems);
+        TranslateMovesToInt(movesToHandOutInInt, movesToHandOut);
+        TranslateItemsToInt(currentItemsHandedOutInInt, currentItemsHandedOut, allPocketMonsterItems);
+        TranslateMovesToInt(currentMovesHandedOutInInt, currentMovesHandedOut);
+        SaveSytem.SaveGame(playerBattle.gameObject, this, managerOfEnemys, managerOfTheTerrains);
+
+        TweenSavingTextColor();
+    }
+
+    public void TranslatePocketmonsterTeamToInt(List<PocketMonster> playerPocketMonsters, List<int> playerPocketMonsterInInt,
+        List<int> playerPocketMonstersAbilityInInt, List<List<int>> playerPocketMonsterItemsInInt, List<List<int>> playerPocketMonsterMovesInInt)
+    {
         for (int i = 0; i < playerPocketMonsters.Count; i++)
         {
             string pocketMonsterName = playerPocketMonsters[i].name;
@@ -1786,16 +1812,6 @@ public class GameManager : MonoBehaviour
             }
             playerPocketMonsterMovesInInt.Add(pocketMonsterMoves);
         }
-
-        TranslateItemsToInt(teamBuffsOfPlayerInInt, teamBuffsOfPlayer, allTeamBuffs);
-        TranslateMovesToInt(allMovesHandedOutInInt, allMovesHandedOut);
-        TranslateItemsToInt(itemsToHandOutInInt, itemsToHandOut, allPocketMonsterItems);
-        TranslateMovesToInt(movesToHandOutInInt, movesToHandOut);
-        TranslateItemsToInt(currentItemsHandedOutInInt, currentItemsHandedOut, allPocketMonsterItems);
-        TranslateMovesToInt(currentMovesHandedOutInInt, currentMovesHandedOut);
-        SaveSytem.SaveGame(playerBattle.gameObject, this, managerOfEnemys, managerOfTheTerrains);
-
-        TweenSavingTextColor();
     }
 
     private void TweenSavingTextColor()
@@ -1821,7 +1837,7 @@ public class GameManager : MonoBehaviour
         canSave = true;
     }
 
-    private void TranslateItemsToInt(List<int> intItemList, List<PocketMonsterItem> actualItemList, List<PocketMonsterItem> itemListToSearchThrough)
+    public void TranslateItemsToInt(List<int> intItemList, List<PocketMonsterItem> actualItemList, List<PocketMonsterItem> itemListToSearchThrough)
     {
         intItemList.Clear();
         for (int i = 0; i < actualItemList.Count; i++)
@@ -1860,7 +1876,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private void RecoverItems(List<int> data, List<PocketMonsterItem> itemsToRecover, List<PocketMonsterItem> itemListToSearchThrough)
+    public void RecoverItems(List<int> data, List<PocketMonsterItem> itemsToRecover, List<PocketMonsterItem> itemListToSearchThrough)
     {
         itemsToRecover.Clear();
         for (int i = 0; i < data.Count; i++)
@@ -1869,7 +1885,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private void FillPocketMonsterMoveList()
+    public void FillPocketMonsterMoveList()
     {
         ChemicalBarrage chemicalBarrage = new ChemicalBarrage();
         ChemicalJab chemicalJab = new ChemicalJab();
@@ -1944,7 +1960,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private void FillPocketMonsterItemList()
+    public void FillPocketMonsterItemList()
     {
         AttackBooster attackBooster = new AttackBooster();
         Leftovers leftovers = new Leftovers();
@@ -1979,7 +1995,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private void FillTeamBuffsList()
+    public void FillTeamBuffsList()
     {
         SoMuchFood soMuchFood = new SoMuchFood();
         DrainLife drainLife = new DrainLife();

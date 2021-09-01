@@ -58,7 +58,7 @@ public class OverworldTrainer : MonoBehaviour
             gameManager.EnableWorldUI(false);
             transform.position = ownBattlePos;
             cam.transform.position = playerBattlePos;
-            pocketMonsterTeam = enemyManager.createTeamForAi(GetComponent<TrainerAi>());
+            pocketMonsterTeam = enemyManager.createTeamForAi(GetComponent<TrainerAi>(), true);
             GetComponent<TrainerAi>().AddpocketMonsters(pocketMonsterTeam, enemyManager.teamBuffsOfAi, player.GetComponent<PlayerBattle>());
             LoadPlayerStats();
             player.GetComponent<PlayerBattle>().isInBattle = true;

@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class EnemyManager : MonoBehaviour
 {
-    private GameManager gameManager;
+    [System.NonSerialized]
+    public GameManager gameManager = null;
     private TerrainManager terrainManager;
 
     public List<PocketMonsterItem> teamBuffsOfAi = new List<PocketMonsterItem>();
@@ -20,7 +21,7 @@ public class EnemyManager : MonoBehaviour
     [System.NonSerialized]
     public int amountOfTeamBuffs = 0;
 
-    private enum MovesToGive
+    public enum MovesToGive
     {
         ResistedAndFromWorstStat,
         Resisted,
@@ -29,9 +30,9 @@ public class EnemyManager : MonoBehaviour
         Effective
     }
 
-    MovesToGive movesToGive = MovesToGive.ResistedAndFromWorstStat;
+    public MovesToGive movesToGive = MovesToGive.ResistedAndFromWorstStat;
 
-    public List<PocketMonster> createTeamForAi(TrainerAi trainerAi)
+    public virtual List<PocketMonster> createTeamForAi(TrainerAi trainerAi, bool filterStatusMoves)
     {
         CalculateTeamStats();
 
@@ -68,7 +69,7 @@ public class EnemyManager : MonoBehaviour
                 }
 
                 PocketMonsterMoves move = gameManager.ChooseRandomMove(randomMoveList, movesToSelectFrom);
-                while (move == null || move.moveSort == PocketMonsterMoves.MoveSort.Status)
+                while (move == null || move.moveSort == PocketMonsterMoves.MoveSort.Status && filterStatusMoves)
                 {
                     move = gameManager.ChooseRandomMove(randomMoveList, movesToSelectFrom);
                     if (!addSameMoveTypes)
@@ -123,21 +124,33 @@ public class EnemyManager : MonoBehaviour
 
         teamBuffsOfAi.Clear();
 
+        teamBuffsOfAi = CreateTeambuffsList();
+
+        if (trainerAi != null)
+        {
+            trainerAi.stats.intelligence = currentIntelligence;
+        }
+
+        return enemyPocketMonsterTeam;
+    }
+
+    public List<PocketMonsterItem> CreateTeambuffsList()
+    {
+        List<PocketMonsterItem> teamBuffs = new List<PocketMonsterItem>();
+
         for (int i = 0; i < amountOfTeamBuffs; i++)
         {
             PocketMonsterItem teamBuff = gameManager.allTeamBuffs[Random.Range(0, gameManager.allTeamBuffs.Count)];
 
-            while (teamBuffsOfAi.Contains(teamBuff))
+            while (teamBuffs.Contains(teamBuff))
             {
                 teamBuff = gameManager.allTeamBuffs[Random.Range(0, gameManager.allTeamBuffs.Count)];
             }
 
-            teamBuffsOfAi.Add(teamBuff);
+            teamBuffs.Add(teamBuff);
         }
 
-        trainerAi.stats.intelligence = currentIntelligence;
-
-        return enemyPocketMonsterTeam;
+        return teamBuffs;
     }
 
     private List<PocketMonster> CreatePossiblePocketMonsterList(List<PocketMonster> possiblePocketMonsters)
@@ -511,7 +524,7 @@ public class EnemyManager : MonoBehaviour
         return listOfItemsForPocketMonster;
     }
 
-    private void CalculateTeamStats()
+    public virtual void CalculateTeamStats()
     {
         switch (terrainManager.whatToSpawn)
         {
@@ -579,6 +592,7 @@ public class EnemyManager : MonoBehaviour
         currentIntelligence = data.currentIntelligence;
         amountOfTeamBuffs = data.amountOfTeamBuffs;
         addMove = data.addMove;
+        movesToGive = (MovesToGive)System.Enum.Parse(typeof(MovesToGive), data.movesToGive);
     }
 
     public void SetGameManager(GameManager gameManager)

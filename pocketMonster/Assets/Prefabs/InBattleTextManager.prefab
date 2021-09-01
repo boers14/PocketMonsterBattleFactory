@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 4973757274519967192}
   m_Layer: 0
   m_Name: InBattleTextManager
-  m_TagString: Untagged
+  m_TagString: InBattleTextManager
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -43,6 +43,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8e4457bf265192546819ff71d5ddab97, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  player: {fileID: 0}
   image: {fileID: 8115841876542924456, guid: c2c39f54d58a5644d816ae27f0c7317e, type: 3}
   text: {fileID: 2915910977382882607, guid: 0c53782f359609548a2126d8637f47bf, type: 3}
   textDisplayTime: 3
+  queFinish: 0
+  canSkipMessage: 1

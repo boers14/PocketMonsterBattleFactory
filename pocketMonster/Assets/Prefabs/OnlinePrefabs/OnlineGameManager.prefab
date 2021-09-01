@@ -1,0 +1,152 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &8590392094976119609
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8590392094976119611}
+  - component: {fileID: 8590392094976119608}
+  - component: {fileID: 1721555079350498298}
+  m_Layer: 0
+  m_Name: OnlineGameManager
+  m_TagString: GameManager
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8590392094976119611
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8590392094976119609}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 5.5926394, y: -26.761448, z: 7.4014645}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8590392094976119608
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8590392094976119609}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3b5640b0aa5eae4488cffd3c79c45f34, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  playerObject: {fileID: 0}
+  trainer: {fileID: 0}
+  pocketMonsterGiver: {fileID: 0}
+  itemGiver: {fileID: 0}
+  teamBuffGiver: {fileID: 0}
+  moveGiver: {fileID: 0}
+  terrainManager: {fileID: 0}
+  inBattleTextManager: {fileID: 0}
+  enemyManager: {fileID: 0}
+  exitGameMenu: {fileID: 0}
+  initialPlayerPos: {x: 0, y: 0, z: 0}
+  allPocketMonsters:
+  - {fileID: 5608329556560762421, guid: 9eb37f2a6e9cefa418de10fc5392fe6a, type: 3}
+  - {fileID: 7025967069232784819, guid: 1591c7447ccfc4443ba6ce9bfbfd9eb4, type: 3}
+  - {fileID: 1310809602902334643, guid: ddddc5cfc7101b145b346d51811051c7, type: 3}
+  - {fileID: 5608329556560762421, guid: 13b010985575ae747b694f1373dba33a, type: 3}
+  - {fileID: 5608329556560762421, guid: 8f767934c8019c14e92fc5764a40d723, type: 3}
+  - {fileID: 5608329556560762421, guid: fcdc80326fcd7be4b81798a9c54eefcf, type: 3}
+  - {fileID: 5608329556560762421, guid: 57175672b54bf9c46b7f44e1f101b186, type: 3}
+  - {fileID: 5608329556560762421, guid: 491465d05c6db9249b71e615e11c4824, type: 3}
+  - {fileID: 5608329556560762421, guid: ecd4a6df5c347e64ba6f59e2b2c362a1, type: 3}
+  - {fileID: 5608329556560762421, guid: c46f7d66e02f3bd478426be66bedf324, type: 3}
+  - {fileID: 5608329556560762421, guid: 3715f8e353f576f469c40b2e49535f1e, type: 3}
+  - {fileID: 5608329556560762421, guid: 916174897c75fe945bc707d0a6c9d9ce, type: 3}
+  - {fileID: 5608329556560762421, guid: c26517145cbde0a4294089b375237115, type: 3}
+  - {fileID: 5608329556560762421, guid: 9893491917036084ea0d4f646214ab06, type: 3}
+  - {fileID: 5608329556560762421, guid: bcdeebc07078f2d48ad3afdd08af39fc, type: 3}
+  - {fileID: 5608329556560762421, guid: f15c3140200fc7f4286534654c9aeec8, type: 3}
+  - {fileID: 5608329556560762421, guid: 1a71157b16b895241b610d449243aac0, type: 3}
+  - {fileID: 5608329556560762421, guid: c26a92f428973144ead006744786127f, type: 3}
+  - {fileID: 5608329556560762421, guid: 2c1055c827758274ab4d946826a986bf, type: 3}
+  - {fileID: 5608329556560762421, guid: bb4811fde5ecf6443b94c60ba2ac6d00, type: 3}
+  - {fileID: 5608329556560762421, guid: 8a19ffe646d28ae468bdbfed31f3fb60, type: 3}
+  - {fileID: 5608329556560762421, guid: d243522c2023145449c1d2e259c32bbc, type: 3}
+  - {fileID: 5608329556560762421, guid: aed168d0f111f8d449a8f5429e0609a0, type: 3}
+  - {fileID: 5608329556560762421, guid: dca700a9773e098449cfa0b2c6529c04, type: 3}
+  - {fileID: 5608329556560762421, guid: 395943665eaa05f429144c86d24e0175, type: 3}
+  - {fileID: 5608329556560762421, guid: 68c15afa88de8dd44ad1832bb824e192, type: 3}
+  - {fileID: 5608329556560762421, guid: 5cc62f4a209bd3e40b285ed7e328606c, type: 3}
+  - {fileID: 5608329556560762421, guid: 11ba87b7a5cf78a4da188deb5b07493b, type: 3}
+  - {fileID: 5608329556560762421, guid: 462790c45a734e742b1b5810c4651aa1, type: 3}
+  - {fileID: 5608329556560762421, guid: 7e758b1fc8beabd49bc2fc2f947c2500, type: 3}
+  - {fileID: 5608329556560762421, guid: 228b732bffd37b54ab8c6142e6f8b989, type: 3}
+  - {fileID: 5608329556560762421, guid: f5c028a1641e1da4c8bb6ffbb30dbe86, type: 3}
+  - {fileID: 5608329556560762421, guid: e23b20a317c9a6e40a435d1a71b3301b, type: 3}
+  - {fileID: 5608329556560762421, guid: cd5954cdd3a4f1440997b7b2c7682b57, type: 3}
+  - {fileID: 5608329556560762421, guid: 820c79f1f0f91824cbbcf1d06a425cb4, type: 3}
+  - {fileID: 5608329556560762421, guid: 10ad72d402cc2064abc0d4d1080c6f0c, type: 3}
+  - {fileID: 5608329556560762421, guid: 8fb2575c840d28249ba39ef31bc20a4f, type: 3}
+  - {fileID: 5608329556560762421, guid: a944e97a1e7d4244bb8bda8f91092dd9, type: 3}
+  - {fileID: 5608329556560762421, guid: ba2e6ac27a6bcd041868550ec1a33221, type: 3}
+  - {fileID: 5608329556560762421, guid: dc1a1dd2205188248a1c6211925bceb0, type: 3}
+  - {fileID: 5608329556560762421, guid: e400c6695ea9543418fe31efa9568176, type: 3}
+  - {fileID: 7025967069232784819, guid: 6d4d8dfe2085cc04fb9846459d50c9a0, type: 3}
+  - {fileID: 1310809602902334643, guid: 0d724b9e0e94fcd44a344f7677780231, type: 3}
+  - {fileID: 5608329556560762421, guid: 24e739d8e1c5b8a43891763ffc0ea947, type: 3}
+  - {fileID: 5608329556560762421, guid: 13f1e3dc3d52aee4ab164ea5aeb916a2, type: 3}
+  - {fileID: 5608329556560762421, guid: 7920011c54b68e34eb9ffda06e5273d3, type: 3}
+  - {fileID: 5608329556560762421, guid: 7044a5af63362584bbfa05783329800f, type: 3}
+  - {fileID: 5608329556560762421, guid: b5e7938b0d523e0408eb2448df1a1325, type: 3}
+  - {fileID: 5608329556560762421, guid: 1a3e6a41cac3a304884b6311d1c66d4f, type: 3}
+  - {fileID: 5608329556560762421, guid: 5f02034630bc70040b431319c493f9a1, type: 3}
+  amountOfPicks: 3
+  maxAmountOfMoves: 4
+  maxAmountOfItems: 3
+  maxAmountOfTeamBuffs: 3
+  maxTeamSize: 4
+  buttonPrefab: {fileID: 0}
+  hoverableButtonPrefab: {fileID: 0}
+  exitButton: {fileID: 0}
+  textPrefab: {fileID: 0}
+  hoverText: {fileID: 0}
+  imagePrefab: {fileID: 0}
+  lives: 3
+  endScreenName: 
+  teamBuffMaterial: {fileID: 0}
+  finalBattleMaterial: {fileID: 0}
+  pocketMonsterMaterial: {fileID: 0}
+  itemMaterial: {fileID: 0}
+  moveMaterial: {fileID: 0}
+  savingTextStartColor:
+    serializedVersion: 2
+    rgba: 4278190080
+  savingTextEndColor:
+    serializedVersion: 2
+    rgba: 4278190080
+  onlineTeamCreator: {fileID: 0}
+--- !u!114 &1721555079350498298
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8590392094976119609}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sceneId: 0
+  serverOnly: 0
+  visible: 0
+  m_AssetId: 1fcf0ab21b921314b8319e3017de501a
+  hasSpawned: 0

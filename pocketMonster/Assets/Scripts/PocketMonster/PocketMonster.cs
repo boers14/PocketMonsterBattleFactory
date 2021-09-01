@@ -11,8 +11,10 @@ public class PocketMonster : MonoBehaviour
 
     public List<PocketMonsterItem> items = new List<PocketMonsterItem>();
 
+    [System.NonSerialized]
     public float health = 0, amountOfDamageTaken = 0;
 
+    [System.NonSerialized]
     public bool fainted = false, abilityOnTheirTurn = false, aftermathOfAbility = false, useInAttackAbility = false;
 
     private InBattleTextManager inBattleTextManager;
@@ -31,9 +33,11 @@ public class PocketMonster : MonoBehaviour
         None
     }
 
+    [System.NonSerialized]
     public StatusEffects currentStatus = StatusEffects.None;
 
     public List<PocketMonsterAbility> possibleAbilitys = new List<PocketMonsterAbility>();
+    [System.NonSerialized]
     public PocketMonsterAbility ability, chosenAbility;
     private bool goUp = true, isPlayingParticles = false;
 
@@ -118,59 +122,21 @@ public class PocketMonster : MonoBehaviour
 
         float damageDone = move.baseDamage;
         bool critical = false;
-
-        if (Random.Range(1, 100) < stats.critChance)
-        {
-            critical = true;
-        }
-
-        if (move.moveSort == PocketMonsterMoves.MoveSort.Physical)
-        {
-            damageDone = CalculateCriticalDamage(damageDone, critical, stats.attack);
-            if (currentStatus == StatusEffects.Burned)
-            {
-                damageDone /= 2;
-            }
-        }
-        else if (move.moveSort == PocketMonsterMoves.MoveSort.Special)
-        {
-            damageDone = CalculateCriticalDamage(damageDone, critical, stats.specialAttack);
-            if (currentStatus == StatusEffects.Bloated)
-            {
-                damageDone /= 2;
-            }
-        }
-
-        float damageMultiplier = 1;
-
-        for (int i = 0; i < stats.typing.Count; i++)
-        {
-            if (stats.typing[i] == move.moveType)
-            {
-                damageMultiplier += 0.5f;
-            }
-        }
-
-        if (critical)
-        {
-            damageMultiplier += 0.5f;
-        }
-
-        damageDone *= damageMultiplier;
+        damageDone = CalculateDamageDoneByMoveWithoutOpponent(damageDone, move, critical);
 
         bool missed = false;
         if (move.moveSort != PocketMonsterMoves.MoveSort.Status)
         {
             if (currentStatus == StatusEffects.Nearsighted)
             {
-                if (Random.Range(1, 100) >= move.accuracy - 15)
+                if (Random.Range(0, 101) >= move.accuracy - 15)
                 {
                     missed = true;
                 }
             }
             else
             {
-                if (Random.Range(1, 100) >= move.accuracy)
+                if (Random.Range(0, 101) >= move.accuracy)
                 {
                     missed = true;
                 }
@@ -206,7 +172,7 @@ public class PocketMonster : MonoBehaviour
             amountOfDamageTaken *= 2;
         }
 
-        amountOfDamageTaken += (amountOfDamageTaken * Random.Range(0.01f, 0.05f));
+        amountOfDamageTaken += (amountOfDamageTaken * (Random.Range(0.01f, 0.05f) / 100));
 
         if (useInAttackAbility)
         {
@@ -275,7 +241,7 @@ public class PocketMonster : MonoBehaviour
         {
             if (move.hasSideEffect)
             {
-                if (Random.Range(1, 100) >= (100 - move.chanceOfSideEffect))
+                if (Random.Range(0, 101) >= (100 - move.chanceOfSideEffect))
                 {
                     move.GrantSideEffect(other, this, amountOfDamageTaken, inBattleTextManager, player);
                 }
@@ -973,7 +939,6 @@ public class PocketMonster : MonoBehaviour
         ParticleSystem.ShapeModule shapeType = particleSystem.shape;
         ParticleSystem.SizeOverLifetimeModule sizeLifeTimeModule = particleSystem.sizeOverLifetime;
 
-        mainSytem.startDelay = 0.5f;
         mainSytem.startLifetime = 0.7f;
         mainSytem.startSpeed = new ParticleSystem.MinMaxCurve(0.25f, 2.5f);
         emissionSystem.rateOverTime = 150;
@@ -1043,5 +1008,146 @@ public class PocketMonster : MonoBehaviour
                 GetComponent<ParticleSystemRenderer>().material = player.noTypeMat;
                 break;
         }
+    }
+
+    // The online part of the pocketmonster
+    public float CalculateDealingDamage(PocketMonster target, PocketMonsterMoves move, OnlinePlayerBattle playerBattle)
+    {
+        if (target.fainted)
+        {
+            return 0;
+        }
+
+        move.currentPowerPoints--;
+
+        if (currentStatus == StatusEffects.Cursed)
+        {
+            move.currentPowerPoints -= 2;
+        }
+
+        float damageDone = move.baseDamage;
+        bool critical = false;
+        damageDone = CalculateDamageDoneByMoveWithoutOpponent(damageDone, move, critical);
+
+        bool missed = false;
+        if (move.moveSort != PocketMonsterMoves.MoveSort.Status)
+        {
+            if (currentStatus == StatusEffects.Nearsighted)
+            {
+                if (Random.Range(0, 101) >= move.accuracy - 15)
+                {
+                    missed = true;
+                }
+            }
+            else
+            {
+                if (Random.Range(0, 101) >= move.accuracy)
+                {
+                    missed = true;
+                }
+            }
+        }
+
+        if (missed)
+        {
+            damageDone *= 0;
+        } else
+        {
+            damageDone = CalculateTakingDamage(target, damageDone, move, critical, playerBattle);
+        }
+
+        return damageDone;
+    }
+
+    private float CalculateDamageDoneByMoveWithoutOpponent(float damageDone, PocketMonsterMoves move, bool critical)
+    {
+        if (Random.Range(0, 101) < stats.critChance)
+        {
+            critical = true;
+        }
+
+        if (move.moveSort == PocketMonsterMoves.MoveSort.Physical)
+        {
+            damageDone = CalculateCriticalDamage(damageDone, critical, stats.attack);
+            if (currentStatus == StatusEffects.Burned)
+            {
+                damageDone /= 2;
+            }
+        }
+        else if (move.moveSort == PocketMonsterMoves.MoveSort.Special)
+        {
+            damageDone = CalculateCriticalDamage(damageDone, critical, stats.specialAttack);
+            if (currentStatus == StatusEffects.Bloated)
+            {
+                damageDone /= 2;
+            }
+        }
+
+        float damageMultiplier = 1;
+
+        for (int i = 0; i < stats.typing.Count; i++)
+        {
+            if (stats.typing[i] == move.moveType)
+            {
+                damageMultiplier += 0.5f;
+            }
+        }
+
+        if (critical)
+        {
+            damageMultiplier += 0.5f;
+        }
+
+        damageDone *= damageMultiplier;
+
+        return damageDone;
+    }
+
+    private float CalculateTakingDamage(PocketMonster other, float damageDone, PocketMonsterMoves move, bool critical, OnlinePlayerBattle playerBattle)
+    {
+        float damageMultiplier = 1;
+
+        for (int i = 0; i < other.stats.typing.Count; i++)
+        {
+            damageMultiplier *= CalculateInTypingWithGivenType(move.moveType, other.stats.typing[i]);
+        }
+
+        bool missed = false;
+        if (damageDone == 0)
+        {
+            missed = true;
+        }
+        amountOfDamageTaken = damageDone;
+        amountOfDamageTaken *= damageMultiplier;
+
+        if (move.moveSort == PocketMonsterMoves.MoveSort.Physical)
+        {
+            amountOfDamageTaken = CalculateCriticalWhenDefending(amountOfDamageTaken, critical, other.stats.defense);
+        }
+        else if (move.moveSort == PocketMonsterMoves.MoveSort.Special)
+        {
+            amountOfDamageTaken = CalculateCriticalWhenDefending(amountOfDamageTaken, critical, other.stats.specialDefense);
+        }
+
+        if (currentStatus == StatusEffects.Airborne)
+        {
+            amountOfDamageTaken *= 2;
+        }
+
+        amountOfDamageTaken += (amountOfDamageTaken * (Random.Range(0.01f, 0.05f) / 100));
+        amountOfDamageTaken = Mathf.Ceil(amountOfDamageTaken);
+
+        if (!missed)
+        {
+            if (move.hasSideEffect)
+            {
+                if (Random.Range(0, 101) >= (100 - move.chanceOfSideEffect))
+                {
+                    //move.GrantSideEffect(other, this, amountOfDamageTaken, inBattleTextManager, playerBattle);
+                }
+            }
+        }
+
+        return amountOfDamageTaken;
     }
 }

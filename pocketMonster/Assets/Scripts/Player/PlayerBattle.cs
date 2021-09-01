@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Mirror;
 
-public class PlayerBattle : MonoBehaviour
+public class PlayerBattle : NetworkBehaviour
 {
     public PocketMonster currentPocketMonster, opponentPocketMonster, previousPocketMonster;
 
@@ -25,12 +26,12 @@ public class PlayerBattle : MonoBehaviour
     public bool showAll = false, currentPocketmonsterIsFainted = true, isInAbilityMenu = false, lastPocketmonsterFainted = false, 
         healNextPocketMonster = false, isInBattle = false;
 
-    [SerializeField]
-    private float disFromPlayer = 0;
+    public float disFromPlayer = 0;
 
     public List<PocketMonsterItem> teamBuffs = new List<PocketMonsterItem>();
 
-    private InBattleTextManager inBattleTextManager;
+    [System.NonSerialized]
+    public InBattleTextManager inBattleTextManager = null;
 
     public List<List<PocketMonsterMoves>> pocketMonsterMoves = new List<List<PocketMonsterMoves>>();
 
@@ -51,7 +52,7 @@ public class PlayerBattle : MonoBehaviour
 
     private Canvas canvas = null;
 
-    private void Update()
+    public virtual void Update()
     {
         if (Input.GetKeyDown(KeyCode.Z))
         {
@@ -66,7 +67,8 @@ public class PlayerBattle : MonoBehaviour
         }
     }
 
-    public void AddpocketMonster(List<PocketMonster> pocketMonstersThisBattle, List<PocketMonsterItem> teamBuffsThisBattle)
+    public virtual void AddpocketMonster(List<PocketMonster> pocketMonstersThisBattle, List<PocketMonsterItem> teamBuffsThisBattle,
+        List<PocketMonster> opponentPocketMonstersThisBattle = null, List<PocketMonsterItem> opponentTeamBuffsThisBattle = null)
     {
         teamBuffs.Clear();
         for (int i = 0; i < teamBuffsThisBattle.Count; i++)
@@ -92,6 +94,7 @@ public class PlayerBattle : MonoBehaviour
                 transform.position.z + transform.forward.z * disFromPlayer);
             newPocketMonster.transform.eulerAngles = transform.eulerAngles;
             newPocketMonster.SetAllStats();
+            newPocketMonster.chosenAbility = pocketMonstersThisBattle[i].chosenAbility;
 
             List<PocketMonsterMoves> savedMoves = new List<PocketMonsterMoves>();
             for (int j = 0; j < newPocketMonster.moves.Count; j++)
@@ -123,7 +126,7 @@ public class PlayerBattle : MonoBehaviour
         previousPocketMonster = currentPocketMonster;
     }
 
-    public void CreateUI()
+    public virtual void CreateUI()
     {
         if (canvas == null)
         {
@@ -181,10 +184,18 @@ public class PlayerBattle : MonoBehaviour
                 inBattleTextManager.QueMessage("You're team's " + teamBuffs[i].startOfBattleMessage, false, false, false, false);
             }
         }
-        opponentTrainer.CreateTeamBuffMessages();
+
+        if (opponentTrainer)
+        {
+            opponentTrainer.CreateTeamBuffMessages();
+        }
 
         currentPocketMonster.GetOnSwitchItemEffects(teamBuffs, this, opponentPocketMonster);
-        opponentPocketMonster.GetOnSwitchItemEffects(opponentTrainer.stats.teamBuffs, this, currentPocketMonster);
+
+        if (opponentTrainer)
+        {
+            opponentPocketMonster.GetOnSwitchItemEffects(opponentTrainer.stats.teamBuffs, this, currentPocketMonster);
+        }
 
         PocketMonsterTextUpdate playerTextUpdate = new PocketMonsterTextUpdate();
         playerTextUpdate = SetPocketMonsterTextUpdate(currentPocketMonster, currentPocketMonster.currentStatus, currentPocketMonster.health.ToString(), 
@@ -224,9 +235,18 @@ public class PlayerBattle : MonoBehaviour
             EnableAbilityMenu(true);
         } else
         {
-            opponentTrainer.UseAbilityForPocketMonster(this, currentPocketMonster);
+            if (opponentTrainer)
+            {
+                opponentTrainer.UseAbilityForPocketMonster(this, currentPocketMonster);
+            }
+
             currentPocketmonsterIsFainted = false;
-            opponentTrainer.firstTurn = false;
+
+            if (opponentTrainer)
+            {
+                opponentTrainer.firstTurn = false;
+            }
+
             EnableAbilityMenu(false);
         }
     }
@@ -236,7 +256,7 @@ public class PlayerBattle : MonoBehaviour
         useAbilityButtons[index].onClick.AddListener(() => OnAbilityUsage(index));
     }
 
-    private void OnAbilityUsage(int index)
+    public virtual void OnAbilityUsage(int index)
     {
         lastPocketmonsterFainted = currentPocketmonsterIsFainted;
 
@@ -318,7 +338,7 @@ public class PlayerBattle : MonoBehaviour
         switchButtons[index].onClick.AddListener(() => OnSwitchAction(index));
     }
 
-    private void OnSwitchAction(int index)
+    public virtual void OnSwitchAction(int index)
     {
         if (!pocketMonsters[index].fainted && currentPocketMonster.currentStatus != PocketMonster.StatusEffects.Trapped)
         {
@@ -367,19 +387,7 @@ public class PlayerBattle : MonoBehaviour
 
                 currentPocketMonster.gameObject.SetActive(true);
 
-                for (int i = 0; i < switchButtons.Count; i++)
-                {
-                    if (i == index)
-                    {
-                        switchButtons[i].GetComponentInChildren<Text>().text = "Active";
-                    } else if (pocketMonsters[i].fainted)
-                    {
-                        switchButtons[i].GetComponentInChildren<Text>().text = "Fainted";
-                    } else
-                    {
-                        switchButtons[i].GetComponentInChildren<Text>().text = pocketMonsters[i].stats.name;
-                    }
-                }
+                SetSwitchButtonText(index);
 
                 if (!currentPocketMonster.ability.hasBeenUsed && !currentPocketMonster.ability.onDeath)
                 {
@@ -411,6 +419,25 @@ public class PlayerBattle : MonoBehaviour
                 }
 
                 SetSwitchButtonDescription();
+            }
+        }
+    }
+
+    public void SetSwitchButtonText(int index)
+    {
+        for (int i = 0; i < switchButtons.Count; i++)
+        {
+            if (i == index)
+            {
+                switchButtons[i].GetComponentInChildren<Text>().text = "Active";
+            }
+            else if (pocketMonsters[i].fainted)
+            {
+                switchButtons[i].GetComponentInChildren<Text>().text = "Fainted";
+            }
+            else
+            {
+                switchButtons[i].GetComponentInChildren<Text>().text = pocketMonsters[i].stats.name;
             }
         }
     }
@@ -930,7 +957,7 @@ public class PlayerBattle : MonoBehaviour
         return text;
     }
 
-    private void SetUsableMove(int index)
+    public virtual void SetUsableMove(int index)
     {
         if (currentPocketMonster.moves[index].currentPowerPoints <= 0)
         {
