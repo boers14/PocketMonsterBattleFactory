@@ -122,6 +122,11 @@ public class PocketMonster : MonoBehaviour
 
         float damageDone = move.baseDamage;
         bool critical = false;
+        if (Random.Range(0, 101) < stats.critChance)
+        {
+            critical = true;
+        }
+
         damageDone = CalculateDamageDoneByMoveWithoutOpponent(damageDone, move, critical);
 
         bool missed = false;
@@ -1061,11 +1066,6 @@ public class PocketMonster : MonoBehaviour
 
     private float CalculateDamageDoneByMoveWithoutOpponent(float damageDone, PocketMonsterMoves move, bool critical)
     {
-        if (Random.Range(0, 101) < stats.critChance)
-        {
-            critical = true;
-        }
-
         if (move.moveSort == PocketMonsterMoves.MoveSort.Physical)
         {
             damageDone = CalculateCriticalDamage(damageDone, critical, stats.attack);
