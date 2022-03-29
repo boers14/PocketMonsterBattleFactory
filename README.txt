@@ -1,0 +1,1 @@
+A game where the player has to advance throught guanlets and gets and moves and new pocketmonsters on the way to the end of the gauntlet. The ai gets better teams against the player and starts playing better over time.
